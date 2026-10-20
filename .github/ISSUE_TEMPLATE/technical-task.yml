@@ -1,0 +1,29 @@
+name: Technical task
+description: One focused implementation task linked to the team tracker
+title: "[Tech] "
+body:
+  - type: input
+    id: tracker
+    attributes:
+      label: Tracker task
+      description: Task ID or link from the Google tracker
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected result
+      description: What should work when this task is finished?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and dependencies
+      description: Relevant files, inputs and decisions. No keys or credentials.
+  - type: textarea
+    id: checks
+    attributes:
+      label: How we will check it
+    validations:
+      required: true

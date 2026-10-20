@@ -1,0 +1,21 @@
+# Local-only official extracts and generated workspace files
+sources/
+.workspace-build/
+node_modules/
+outputs/
+.team-access/
+.DS_Store
+
+# Credentials and runtime files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.log
+dist/
+build/
+.next/
+coverage/
+__pycache__/
+.venv/
