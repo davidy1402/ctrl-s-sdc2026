@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "growthPercent": 35,
+  "source": "U.S. Bureau of Labor Statistics — Data Scientists",
+  "url": "https://www.bls.gov/ooh/math/data-scientists.htm",
+  "published": "August 27, 2026",
+  "checked": "2026-10-21",
+  "period": "2025–2035",
+  "geography": "United States",
+  "occupation": "Data Scientists",
+  "limitation": "Related occupation proxy for Data Analyst; not Malaysian demand, an individual forecast, or a guarantee.",
+  "license": "U.S. federal government public information; attribution retained."
+}

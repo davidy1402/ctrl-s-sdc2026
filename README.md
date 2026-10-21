@@ -16,7 +16,9 @@ Use the existing WhatsApp group for reminders and quick discussion. Keep accepte
 
 ## Current state
 
-This initial commit sets up team documentation and collaboration. There is no runnable app, selected stack, verified data pipeline or deployed prototype yet. The primary user and feature scope remain for the team to decide. The wireframe AI has reported a draft, but the actual visual artifact has not been added to this repository.
+The Figma UI has been integrated under `frontend/`. A functional Data Analyst exploration slice is available on `codex/aiversecity-functional-mvp`: four responses → deterministic evidence and low-confidence labels → dated BLS source context → explainable recommendation → skills gaps and personalized practice order, adoption scenarios and proposed SDG links. See [run instructions, sources and limitations](frontend/README.md) and [implementation review record](docs/MVP-IMPLEMENTATION.md).
+
+This is a synthetic, session-only MVP for team review. It is not a validated career assessment, Malaysian labor forecast, approved team product decision, or completed competition submission. Replit usage/proof and formal tools declarations remain outstanding.
 
 ## Team responsibilities to confirm
 
