@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react"
+import { assess, plan, learning } from "./mvp/scoring"
+import { parseTrend, type Trend } from "./mvp/trends"
+import { Evidence, TrendPanel, LearningPlan, SdgMapping } from "./mvp/Evidence"
 
 type Screen = "splash" | "welcome" | "onboarding" | "skills-intake" | "assessment-intro" | "assessment" | "analysis" | "capability" | "recommendations" | "career" | "pathway" | "dashboard" | "skills" | "skill" | "logo-system" | "impact"
 
@@ -310,7 +313,7 @@ const questions = [
   },
 ]
 
-const careers = [
+const conceptCareers = [
   {
     id: "data",
     rank: "01",
@@ -345,7 +348,7 @@ const careers = [
   },
 ]
 
-const skills = [
+const conceptSkills = [
   {
     id: "sql",
     name: "SQL",
@@ -606,98 +609,8 @@ const skills = [
   },
 ]
 
-const pathwayData = {
-  data: {
-    skill: "sql",
-    time: "About 2 hours total",
-    missions: [
-      [
-        "Orientation",
-        "Compare two Data Analyst role descriptions",
-        "10 min",
-        "Notice repeated responsibilities, tools, and outcomes.",
-      ],
-      [
-        "Tool trial",
-        "Clean a small messy spreadsheet",
-        "25 min",
-        "Rename, sort, remove duplicates, and document choices.",
-      ],
-      [
-        "Mini project",
-        "Find one story in public data",
-        "45 min",
-        "Create a simple chart and write a three-sentence insight.",
-      ],
-      [
-        "Reflection",
-        "Review what felt energizing",
-        "10 min",
-        "Capture what you liked, disliked, and want to test next.",
-      ],
-    ],
-  },
-  software: {
-    skill: "programming",
-    time: "About 2.5 hours total",
-    missions: [
-      [
-        "Orientation",
-        "Compare two Software Engineer role descriptions",
-        "10 min",
-        "Notice the products, teams, and technologies involved.",
-      ],
-      [
-        "Tool trial",
-        "Edit and run a small program",
-        "30 min",
-        "Change one behavior and explain what the code does.",
-      ],
-      [
-        "Mini project",
-        "Build a simple interactive utility",
-        "60 min",
-        "Break the idea into steps, test it, and document one decision.",
-      ],
-      [
-        "Reflection",
-        "Review your building experience",
-        "10 min",
-        "Capture what felt satisfying and where you wanted more support.",
-      ],
-    ],
-  },
-  ai: {
-    skill: "python",
-    time: "About 3 hours total",
-    missions: [
-      [
-        "Orientation",
-        "Compare two AI Engineer role descriptions",
-        "10 min",
-        "Notice where modeling ends and software engineering begins.",
-      ],
-      [
-        "Tool trial",
-        "Inspect a small Python data workflow",
-        "30 min",
-        "Trace inputs, transformations, and outputs.",
-      ],
-      [
-        "Mini project",
-        "Evaluate mock model outputs",
-        "60 min",
-        "Define useful criteria and document one recurring failure.",
-      ],
-      [
-        "Reflection",
-        "Review the responsible AI trade-offs",
-        "15 min",
-        "Capture risks, assumptions, and questions you would investigate.",
-      ],
-    ],
-  },
-}
+const careers = conceptCareers.filter(c => c.id === "data")
+const skills = conceptSkills.filter(s => s.career === "data")
 
 const impactScenarios = [
   {
@@ -976,7 +889,7 @@ function SkillCard({
           <b>{completed}</b> / 3 missions
         </span>
         <i>
-          <em style={{ width: `${completed * 33.333}%` }} />
+          <em style={{ transform: `scaleX(${completed / 3})` }} />
         </i>
       </span>
     </button>
@@ -984,7 +897,7 @@ function SkillCard({
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("splash")
+  const [screen, setScreen] = useState<Screen>("welcome")
   const [role, setRole] = useState("")
   const [name, setName] = useState("")
   const [question, setQuestion] = useState(0)
@@ -994,8 +907,8 @@ export default function App() {
   const [selectedCareer, setSelectedCareer] = useState("data")
   const [careerReturn, setCareerReturn] = useState<Screen>("recommendations")
   const [pathwayProgress, setPathwayProgress] =
-    useState<Record<string, number[]>>({
-      data: [0],
+    useState<Record<string, string[]>>({
+      data: [],
       software: [],
       ai: [],
     })
@@ -1004,18 +917,40 @@ export default function App() {
   const [skillFilter, setSkillFilter] = useState("all")
   const [intakeSkills, setIntakeSkills] = useState<string[]>([])
   const [skillProgress, setSkillProgress] = useState<Record<string, number[]>>({
-    sql: [0, 1, 2],
-    excel: [0],
+    sql: [],
+    excel: [],
   })
   const [logoPreview, setLogoPreview] = useState<LogoState>("growing")
   const [impactScenario, setImpactScenario] =
     useState<typeof impactScenarios[number]["id"]>("assistive")
   const [impactReturn, setImpactReturn] = useState<Screen>("dashboard")
-  const [signalRevision, setSignalRevision] = useState(1)
+  const [trend, setTrend] = useState<Trend | null>(null)
+  const [trendStatus, setTrendStatus] = useState("Loading reviewed source snapshot…")
+  const refreshTrend = async () => {
+    setTrendStatus("Refreshing public BLS source…")
+    try {
+      const response = await fetch("/api/trends", {cache:"no-store"})
+      if (!response.ok) throw new Error("Unavailable")
+      setTrend(parseTrend(await response.json()))
+      setTrendStatus("Live BLS source retrieved (may be cached up to one hour).")
+    } catch {
+      setTrendStatus("Live refresh unavailable. Keeping the dated snapshot or last successful source; no update claimed.")
+    }
+  }
+  useEffect(() => {
+    let active = true
+    fetch("/data/trend.json", {cache:"no-store"}).then(r => {if(!r.ok) throw new Error(); return r.json()}).then(parseTrend).then(value => {
+      if(active) {setTrend(value); setTrendStatus("Reviewed snapshot — use Refresh for a live source check.")}
+    }).catch(() => {if(active) setTrendStatus("Source unavailable. Recommendation has insufficient trend evidence.")})
+    return () => {active=false}
+  }, [])
+  const assessment = assess(answers)
+  const supported = assessment.kind === "complete" && trend !== null
+  const recommendation = !supported ? "Insufficient evidence — complete assessment and load a dated trend source." : trend.growthPercent > 0 ? "Worth exploring: response alignment plus a positive related U.S. job signal. Validate through practical tasks." : "Explore cautiously: the related job signal is flat or declining. Test transferable skills and review local opportunities."
   const [feedback, setFeedback] = useState("")
 
   const go = (next: Screen) => {
-    setScreen(next)
+    setScreen((next === "career" || next === "pathway") && !supported ? "recommendations" : next)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -1096,8 +1031,9 @@ export default function App() {
     careers.find((career) => career.id === selectedCareer) ?? careers[0]
   const activeSkill =
     skills.find((skill) => skill.id === selectedSkill) ?? skills[0]
-  const activePathway =
-    pathwayData[(selectedCareer as keyof typeof pathwayData)]
+  const orderedLearning = plan(intakeSkills)
+  const activePathway = {skill: orderedLearning[0].id, time:"Suggested: four 30-minute practice sessions", missions: orderedLearning.map(item => ["Practice",item.name,"30 min",item.task])}
+  const activeResource = learning.find(item => item.id === activeSkill.id) ?? learning[0]
   const activePathProgress = pathwayProgress[selectedCareer] ?? []
   const totalSkillMissions = Object.values(skillProgress).reduce(
     (total, missions) => total + missions.length,
@@ -1221,12 +1157,12 @@ export default function App() {
           </div>
           <label className="name-field">
             <span>
-              What should we call you? <small>Optional</small>
+              Fictional demo alias <small>Optional · no real personal data</small>
             </span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Your first name"
+              placeholder="e.g. Demo Explorer" maxLength={40}
             />
           </label>
           <div className="sticky-action">
@@ -1387,7 +1323,7 @@ export default function App() {
           />
           <div className="assessment-progress">
             <i
-              style={{ width: `${((question + 1) / questions.length) * 100}%` }}
+              style={{ transform: `scaleX(${(question + 1) / questions.length})` }}
             />
           </div>
           <QuestionVisual type={questions[question].visual} />
@@ -1462,7 +1398,7 @@ export default function App() {
             {[
               "Reviewing response patterns",
               "Grouping capability signals",
-              "Preparing three paths",
+              "Preparing Data Analyst exploration",
             ].map((label, index) => (
               <div
                 className={
@@ -1500,7 +1436,7 @@ export default function App() {
         <section className="main-screen">
           <AppHeader
             title="Capability profile"
-            action={<span className="simulated-label">SIMULATED</span>}
+            action={<span className="simulated-label">EXPLORATION MVP</span>}
           />
           <div className="profile-hero">
             <span className="eyebrow">YOUR CURRENT SIGNALS</span>
@@ -1510,7 +1446,7 @@ export default function App() {
               constellation
             </h1>
             <p>
-              Based on four demonstration scenarios. Treat these as conversation
+              Based on your four responses. Treat these as conversation
               starters, not fixed traits.
             </p>
             <div className="constellation" aria-hidden="true">
@@ -1533,53 +1469,14 @@ export default function App() {
           <div className="signal-section">
             <div className="section-heading">
               <div>
-                <span className="eyebrow">DEMONSTRATED</span>
+                <span className="eyebrow">SELF-DESCRIBED</span>
                 <h2>Signals worth exploring</h2>
               </div>
               <span className="signal-pill">
-                <Icon name="spark" size={13} /> 3 signals
+                <Icon name="spark" size={13} /> {assessment.kind === "complete" ? 3 : 0} signals
               </span>
             </div>
-            {[
-              [
-                "Pattern recognition",
-                "You noticed relationships before jumping to a conclusion.",
-                "Strong signal",
-                "long",
-              ],
-              [
-                "Evidence-led reasoning",
-                "You preferred checking sources and assumptions together.",
-                "Demonstrated",
-                "medium",
-              ],
-              [
-                "Systems thinking",
-                "You looked for causes in a process, not individual blame.",
-                "Developing",
-                "short",
-              ],
-            ].map(([title, text, status, length], index) => (
-              <article className="signal-card" key={title}>
-                <span className="signal-icon">
-                  <Icon
-                    name={
-                      index === 0 ? "chart" : index === 1 ? "compass" : "grid"
-                    }
-                  />
-                </span>
-                <div>
-                  <span className="signal-top">
-                    <strong>{title}</strong>
-                    <small>{status}</small>
-                  </span>
-                  <p>{text}</p>
-                  <i>
-                    <em className={length} />
-                  </i>
-                </div>
-              </article>
-            ))}
+            <Evidence answers={answers} />
           </div>
           <div className="intake-summary">
             <div>
@@ -1610,7 +1507,7 @@ export default function App() {
             </p>
           </div>
           <PrimaryButton onClick={() => go("recommendations")}>
-            Reveal three career paths
+            Explore Data Analyst
           </PrimaryButton>
         </section>
       )}
@@ -1619,23 +1516,25 @@ export default function App() {
         <section className="main-screen wide-screen">
           <AppHeader
             title="Career paths"
-            action={<span className="simulated-label">SIMULATED</span>}
+            action={<span className="simulated-label">EXPLORATION MVP</span>}
           />
           <div className="result-heading">
             <span className="eyebrow">YOUR SHORTLIST</span>
             <h1>
-              Three places
+              A place
               <br />
               to begin exploring.
             </h1>
             <p>
-              Ordered by how directly the demonstration signals connect to
-              day-to-day work — not by guaranteed fit.
+              One supported role in this MVP. Other careers require separate evidence and reviewed rubrics.
             </p>
           </div>
+          <section className="mvp-panel"><h2>Data Analyst recommendation</h2><p>{recommendation}</p><p>{assessment.kind === "complete" ? `Exploration alignment ${assessment.match}/100 · low confidence` : "Assessment incomplete"}</p><button type="button" onClick={() => {setQuestion(0);setAnswers([]);setSelectedAnswer(null);setPathwayProgress({});go("assessment-intro")}}>Retake assessment</button></section>
+          <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} />
           <div className="career-track">
             {careers.map((career) => (
               <button
+                disabled={!supported}
                 className={`career-card ${career.accent}`}
                 key={career.id}
                 onClick={() => openCareer(career.id)}
@@ -1645,7 +1544,7 @@ export default function App() {
                   <span>{career.rank}</span>
                   {career.id === "data" && (
                     <b>
-                      <Icon name="spark" size={12} /> Best starting point
+                      <Icon name="spark" size={12} /> Supported exploration
                     </b>
                   )}
                 </span>
@@ -1729,8 +1628,7 @@ export default function App() {
             {[
               ["all", "All skills"],
               ["data", "Data"],
-              ["software", "Software"],
-              ["ai", "AI"],
+
             ].map(([id, label]) => (
               <button
                 className={skillFilter === id ? "active" : ""}
@@ -1806,7 +1704,7 @@ export default function App() {
                   </div>
                   <div className="skill-hero-progress">
                     <i>
-                      <em style={{ width: `${completed * 33.333}%` }} />
+                      <em style={{ transform: `scaleX(${completed / 3})` }} />
                     </i>
                     <small>
                       {cardState === "milestone"
@@ -1862,20 +1760,7 @@ export default function App() {
                   </section>
 
                   <section className="skill-panel course-panel">
-                    <span className="course-icon">
-                      <Icon name="route" />
-                    </span>
-                    <div>
-                      <span className="eyebrow">SUGGESTED COURSE</span>
-                      <h2>{activeSkill.course}</h2>
-                      <p>
-                        Course link and provider will be added after resource
-                        review.
-                      </p>
-                    </div>
-                    <button type="button" disabled>
-                      Coming soon
-                    </button>
+                    <div><span className="eyebrow">LEARNING RESOURCE</span><h2>{activeResource.resource}</h2><p>External practice resource checked 21 October 2026. Use synthetic data. Completion is not verified proficiency.</p><a href={activeResource.url} target="_blank" rel="noreferrer">Open learning resource</a></div>
                   </section>
 
                   <section className="skill-panel outlook-panel">
@@ -1962,7 +1847,7 @@ export default function App() {
           <AppHeader
             onBack={() => go(careerReturn)}
             title="Career overview"
-            action={<span className="simulated-label">SIMULATED</span>}
+            action={<span className="simulated-label">EXPLORATION MVP</span>}
           />
           <div className="career-hero">
             <span className="eyebrow">{activeCareer.domain}</span>
@@ -1974,7 +1859,7 @@ export default function App() {
             <div className="detail-section">
               <span className="eyebrow">WHY IT SURFACED</span>
               <h2>Your evidence connection</h2>
-              <p>{activeCareer.why}</p>
+              <p>{recommendation}</p><Evidence answers={answers} />
               <div className="evidence-chips">
                 <span>Pattern recognition</span>
                 <span>Structured thinking</span>
@@ -2021,7 +1906,7 @@ export default function App() {
                 <span className="eyebrow">AI & SOCIETAL CONTEXT</span>
                 <h2>Explore change responsibly</h2>
                 <p>
-                  Compare mock disruption scenarios and review the pathway’s
+                  Compare assumption-based disruption scenarios and review the pathway’s
                   potential UN Sustainable Development Goal alignment.
                 </p>
                 <button onClick={openImpact} type="button">
@@ -2029,7 +1914,7 @@ export default function App() {
                 </button>
               </div>
               <div className="sdg-map">
-                <span>MOCK UN SDG MAPPING</span>
+                <span>PROPOSED SDG ALIGNMENT</span>
                 {activeCareer.sdgs.map((sdg) => (
                   <b key={sdg}>{sdg}</b>
                 ))}
@@ -2073,8 +1958,9 @@ export default function App() {
               </div>
             </div>
           </div>
+          <LearningPlan selected={intakeSkills} /><SdgMapping />
           <div className="sticky-action">
-            <PrimaryButton onClick={() => go("pathway")}>
+            <PrimaryButton disabled={!supported} onClick={() => go("pathway")}>
               Start beginner pathway
             </PrimaryButton>
           </div>
@@ -2101,18 +1987,20 @@ export default function App() {
               investing in a longer course.
             </p>
           </div>
+          <LearningPlan selected={intakeSkills} />
           <div className="pathway-progress">
             <div>
               <span>{activePathProgress.length} of 4 complete</span>
               <small>{activePathway.time}</small>
             </div>
             <i>
-              <em style={{ width: `${activePathProgress.length * 25}%` }} />
+              <em style={{ transform: `scaleX(${activePathProgress.length / 4})` }} />
             </i>
           </div>
           <div className="mission-list">
             {activePathway.missions.map(([type, title, time, text], index) => {
-              const complete = activePathProgress.includes(index)
+              const missionId = orderedLearning[index].id
+              const complete = activePathProgress.includes(missionId)
               return (
                 <button
                   className={`mission ${complete ? "complete" : ""}`}
@@ -2121,8 +2009,8 @@ export default function App() {
                     setPathwayProgress((current) => ({
                       ...current,
                       [selectedCareer]: complete
-                        ? activePathProgress.filter((item) => item !== index)
-                        : [...activePathProgress, index],
+                        ? activePathProgress.filter((item) => item !== missionId)
+                        : [...activePathProgress, missionId],
                     }))
                     announce(
                       complete
@@ -2150,9 +2038,7 @@ export default function App() {
           <div className="placeholder-note">
             <Icon name="info" />
             <p>
-              <strong>MVP placeholder:</strong> Mission content is illustrative.
-              A production version would link to reviewed resources and save
-              progress to an account.
+              <strong>Practice plan:</strong> Use fictional data and the linked resources above. Completion is self-reported and remains in this session only.
             </p>
           </div>
           <button
@@ -2185,7 +2071,7 @@ export default function App() {
           <AppHeader
             onBack={() => go(impactReturn)}
             title="AI outlook"
-            action={<span className="simulated-label">MOCK SIGNALS</span>}
+            action={<span className="simulated-label">SOURCE CONTEXT</span>}
           />
           <div className="impact-heading">
             <span className="eyebrow">SCENARIO EXPLORER</span>
@@ -2196,8 +2082,7 @@ export default function App() {
             </h1>
             <p>
               Explore multiple possibilities rather than one unsupported
-              prediction. All signals, dates, and sources below are
-              placeholders.
+              prediction. Scenario assumptions are not forecasts or assigned probabilities. Source context is dated below.
             </p>
           </div>
           <div
@@ -2224,7 +2109,7 @@ export default function App() {
               <Icon name="spark" />
             </span>
             <div>
-              <span className="eyebrow">SELECTED MOCK SCENARIO</span>
+              <span className="eyebrow">SELECTED ASSUMPTION</span>
               <h2>
                 {
                   impactScenarios.find(
@@ -2299,55 +2184,7 @@ export default function App() {
               )
             })}
           </div>
-          <section className="source-ledger">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">SIGNAL LEDGER</span>
-                <h2>Sources & review dates</h2>
-              </div>
-              <button
-                onClick={() => {
-                  setSignalRevision((value) => value + 1)
-                  announce("Mock trend signals refreshed")
-                }}
-                type="button"
-              >
-                Refresh mock data
-              </button>
-            </div>
-            {[
-              [
-                "Labor-market signal feed",
-                "Source integration pending",
-                "15 Mar 2025",
-              ],
-              [
-                "Task exposure taxonomy",
-                "Research partner pending",
-                "15 Mar 2025",
-              ],
-              [
-                "Course and skill catalog",
-                "Provider review pending",
-                "15 Mar 2025",
-              ],
-            ].map(([source, status, date]) => (
-              <div className="source-row" key={source}>
-                <span>
-                  <Icon name="info" size={17} />
-                </span>
-                <div>
-                  <strong>{source}</strong>
-                  <small>{status}</small>
-                </div>
-                <time>{date}</time>
-              </div>
-            ))}
-            <p>
-              MOCK REVISION {signalRevision} · No live sources connected. Dates
-              demonstrate the update model only.
-            </p>
-          </section>
+          <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} /><SdgMapping />
         </section>
       )}
 
@@ -2598,7 +2435,7 @@ export default function App() {
                 <Icon name="spark" />
               </span>
               <strong>Capability profile</strong>
-              <small>Review your demonstrated signals</small>
+              <small>Review your response evidence</small>
             </button>
             <button onClick={() => go("logo-system")} type="button">
               <span>
@@ -2612,7 +2449,7 @@ export default function App() {
                 <Icon name="spark" />
               </span>
               <strong>AI outlook</strong>
-              <small>Compare 3 mock disruption scenarios</small>
+              <small>Compare 3 uncertain adoption scenarios</small>
             </button>
           </div>
           <div className="demo-banner">

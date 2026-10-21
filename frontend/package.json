@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "oxfmt src/main.tsx vite.config.ts"
+    "format": "oxfmt src/main.tsx vite.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test src/mvp/*.test.ts",
+    "refresh:trends": "node --import tsx scripts/refresh-trends.ts"
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -22,6 +25,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "oxfmt": "^0.2.0",
     "typescript": "^5.7.0",
-    "vite": "^8.0.5"
+    "vite": "^8.0.5",
+    "tsx": "^4.20.0"
   }
 }
