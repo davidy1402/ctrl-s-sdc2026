@@ -889,7 +889,7 @@ function SkillCard({
           <b>{completed}</b> / 3 missions
         </span>
         <i>
-          <em style={{ width: `${completed * 33.333}%` }} />
+          <em style={{ transform: `scaleX(${completed / 3})` }} />
         </i>
       </span>
     </button>
@@ -1323,7 +1323,7 @@ export default function App() {
           />
           <div className="assessment-progress">
             <i
-              style={{ width: `${((question + 1) / questions.length) * 100}%` }}
+              style={{ transform: `scaleX(${(question + 1) / questions.length})` }}
             />
           </div>
           <QuestionVisual type={questions[question].visual} />
@@ -1704,7 +1704,7 @@ export default function App() {
                   </div>
                   <div className="skill-hero-progress">
                     <i>
-                      <em style={{ width: `${completed * 33.333}%` }} />
+                      <em style={{ transform: `scaleX(${completed / 3})` }} />
                     </i>
                     <small>
                       {cardState === "milestone"
@@ -1994,7 +1994,7 @@ export default function App() {
               <small>{activePathway.time}</small>
             </div>
             <i>
-              <em style={{ width: `${activePathProgress.length * 25}%` }} />
+              <em style={{ transform: `scaleX(${activePathProgress.length / 4})` }} />
             </i>
           </div>
           <div className="mission-list">
