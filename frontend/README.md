@@ -47,3 +47,9 @@ Three adoption scenarios are qualitative team-review assumptions with no probabi
 ## Deployment and disclosure
 
 Deploy the `frontend` root to Vercel as Vite, output `dist`, Node 24, build `npm run build`. The API endpoint is `/api/trends`. No database/authentication is needed for this session-only synthetic demo. No runtime model, model API, GPU or RunPod work is used. Development assistance: OpenAI Codex (GPT-6 family; exact backend release not exposed), plus the existing Figma UI export. The team must review/understand this contribution and include actual tool use in both formal declarations. This implementation does not establish completed Replit usage, sponsor compliance, user research, validated skill scores, or submission readiness. Replit proof and the unresolved sponsor/API rule still need team follow-up.
+
+## Mobile home-screen app
+
+The existing A/orbit mark is exported to SVG plus 192px/512px launcher PNGs and a 180px Apple touch icon. `manifest.webmanifest` provides the standalone name, colors and launch path. All six identity expressions remain in the app; the OS home-screen icon is static and may be cached. For an older saved shortcut, remove only that shortcut, then add the updated website to the home screen again if the icon remains old. No offline support or automatic system-icon switching is claimed.
+
+The mobile pathway uses one expandable practice list with linked resources, stable skill IDs and self-reported completion. Sources/limitations remain in disclosure panels. Interface polish does not change assessment scoring or data retention.

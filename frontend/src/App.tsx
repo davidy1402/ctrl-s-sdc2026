@@ -1,5 +1,6 @@
+import { Pathway } from "./mvp/Pathway"
 import { useEffect, useState } from "react"
-import { assess, plan, learning } from "./mvp/scoring"
+import { assess, learning } from "./mvp/scoring"
 import { parseTrend, type Trend } from "./mvp/trends"
 import { Evidence, TrendPanel, LearningPlan, SdgMapping } from "./mvp/Evidence"
 
@@ -920,7 +921,6 @@ export default function App() {
     sql: [],
     excel: [],
   })
-  const [logoPreview, setLogoPreview] = useState<LogoState>("growing")
   const [impactScenario, setImpactScenario] =
     useState<typeof impactScenarios[number]["id"]>("assistive")
   const [impactReturn, setImpactReturn] = useState<Screen>("dashboard")
@@ -1031,21 +1031,19 @@ export default function App() {
     careers.find((career) => career.id === selectedCareer) ?? careers[0]
   const activeSkill =
     skills.find((skill) => skill.id === selectedSkill) ?? skills[0]
-  const orderedLearning = plan(intakeSkills)
-  const activePathway = {skill: orderedLearning[0].id, time:"Suggested: four 30-minute practice sessions", missions: orderedLearning.map(item => ["Practice",item.name,"30 min",item.task])}
   const activeResource = learning.find(item => item.id === activeSkill.id) ?? learning[0]
   const activePathProgress = pathwayProgress[selectedCareer] ?? []
   const totalSkillMissions = Object.values(skillProgress).reduce(
     (total, missions) => total + missions.length,
     0,
   )
-  const dashboardLogoState: LogoState = Object.values(skillProgress).some(
+  const dashboardLogoState: LogoState = activePathProgress.length === 4 || Object.values(skillProgress).some(
     (missions) => missions.length === 3,
   )
     ? "milestone"
-    : totalSkillMissions > 0
+    : totalSkillMissions > 0 || activePathProgress.length > 0
       ? "growing"
-      : "active"
+      : answers.length === 4 ? "active" : "new"
   const mainScreens: Screen[] = [
     "dashboard",
     "recommendations",
@@ -1115,7 +1113,7 @@ export default function App() {
               type="button"
               onClick={() => go("dashboard")}
             >
-              View demo dashboard
+              Explore the app
             </button>
           </div>
         </section>
@@ -1436,7 +1434,6 @@ export default function App() {
         <section className="main-screen">
           <AppHeader
             title="Capability profile"
-            action={<span className="simulated-label">EXPLORATION MVP</span>}
           />
           <div className="profile-hero">
             <span className="eyebrow">YOUR CURRENT SIGNALS</span>
@@ -1516,7 +1513,6 @@ export default function App() {
         <section className="main-screen wide-screen">
           <AppHeader
             title="Career paths"
-            action={<span className="simulated-label">EXPLORATION MVP</span>}
           />
           <div className="result-heading">
             <span className="eyebrow">YOUR SHORTLIST</span>
@@ -1565,7 +1561,7 @@ export default function App() {
               <Icon name="spark" />
             </span>
             <div>
-              <span className="eyebrow">WHY THESE PATHS</span>
+              <span className="eyebrow">WHY THIS PATH</span>
               <h2>Evidence, translated.</h2>
               <p>
                 Each recommendation connects your assessment choices to
@@ -1581,7 +1577,6 @@ export default function App() {
         <section className="main-screen skills-screen">
           <AppHeader
             title="Skill collection"
-            action={<span className="simulated-label">MOCK CONTENT</span>}
           />
           <div className="collection-heading">
             <span className="eyebrow">YOUR LEARNING DECK</span>
@@ -1660,9 +1655,7 @@ export default function App() {
           <div className="placeholder-note">
             <Icon name="info" />
             <p>
-              <strong>Prototype collection:</strong> Skills, learning times,
-              courses, and outlooks are temporary mock content for testing the
-              experience.
+              Practice builds familiarity. Marking a mission complete is your own record, not verified mastery.
             </p>
           </div>
         </section>
@@ -1673,7 +1666,6 @@ export default function App() {
           <AppHeader
             onBack={() => go(skillReturn)}
             title="Skill card"
-            action={<span className="simulated-label">PLACEHOLDER DATA</span>}
           />
           {(() => {
             const completed = skillProgress[activeSkill.id]?.length ?? 0
@@ -1764,76 +1756,9 @@ export default function App() {
                   </section>
 
                   <section className="skill-panel outlook-panel">
-                    <div className="outlook-heading">
-                      <span className="outlook-icon">
-                        <Icon name="spark" />
-                      </span>
-                      <div>
-                        <span className="eyebrow">FUTURE OUTLOOK</span>
-                        <h2>AI impact at task level</h2>
-                      </div>
-                      <span className="placeholder-chip">
-                        PLACEHOLDER INSIGHT
-                      </span>
-                    </div>
-                    <div className="pressure-meter">
-                      <div>
-                        <strong>{activeSkill.pressure}</strong>
-                        <small>
-                          Directional label only — no prediction or statistic
-                        </small>
-                      </div>
-                      <i
-                        className={
-                          activeSkill.pressure.startsWith("High")
-                            ? "high"
-                            : activeSkill.pressure.startsWith("Moderate")
-                              ? "moderate"
-                              : "lower"
-                        }
-                      >
-                        <em />
-                      </i>
-                    </div>
-                    <div className="trend-copy">
-                      <span>MARKET TREND · MOCK SUMMARY</span>
-                      <p>{activeSkill.trend}</p>
-                    </div>
-                    <div className="signal-provenance">
-                      <div>
-                        <span>MOCK SOURCE SLOT</span>
-                        <strong>
-                          Labor-market signal feed · Not connected
-                        </strong>
-                      </div>
-                      <div>
-                        <span>MOCK REVIEW DATE</span>
-                        <strong>15 Mar 2025</strong>
-                      </div>
-                    </div>
-                    <div className="adapt-skills">
-                      <span>RECOMMENDED ADAPTATION SKILLS</span>
-                      <div>
-                        {activeSkill.adapt.map((item) => (
-                          <b key={item}>{item}</b>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="outlook-disclaimer">
-                      <Icon name="info" size={17} />
-                      <p>
-                        This preview uses temporary editorial copy. It does not
-                        cite research, forecast demand, or predict job outcomes.
-                      </p>
-                    </div>
-                    <button
-                      className="outlook-link"
-                      onClick={openImpact}
-                      type="button"
-                    >
-                      Compare AI disruption scenarios
-                      <Icon name="arrow" size={17} />
-                    </button>
+                    <h2>Build skills that travel.</h2><p>Practice checking results and explaining your decisions alongside the tools. AI adoption varies; exposure is not a prediction of job loss.</p>
+                    <button className="outlook-link" onClick={openImpact} type="button">Explore AI scenarios <Icon name="arrow" size={17} /></button>
+                    <details className="pathway-notes"><summary>Sources & uncertainty</summary><TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} /></details>
                   </section>
                 </div>
               </>
@@ -1847,7 +1772,6 @@ export default function App() {
           <AppHeader
             onBack={() => go(careerReturn)}
             title="Career overview"
-            action={<span className="simulated-label">EXPLORATION MVP</span>}
           />
           <div className="career-hero">
             <span className="eyebrow">{activeCareer.domain}</span>
@@ -1968,101 +1892,13 @@ export default function App() {
       )}
 
       {screen === "pathway" && (
-        <section className="main-screen">
-          <AppHeader
-            title="My pathway"
-            action={<span className="simulated-label">DEMO PLAN</span>}
-          />
-          <div className="pathway-heading">
-            <span className="eyebrow">
-              {activeCareer.title.toUpperCase()} · BEGINNER
-            </span>
-            <h1>
-              Your first
-              <br />
-              four missions.
-            </h1>
-            <p>
-              Small experiments help you learn whether you enjoy the work before
-              investing in a longer course.
-            </p>
-          </div>
-          <LearningPlan selected={intakeSkills} />
-          <div className="pathway-progress">
-            <div>
-              <span>{activePathProgress.length} of 4 complete</span>
-              <small>{activePathway.time}</small>
-            </div>
-            <i>
-              <em style={{ transform: `scaleX(${activePathProgress.length / 4})` }} />
-            </i>
-          </div>
-          <div className="mission-list">
-            {activePathway.missions.map(([type, title, time, text], index) => {
-              const missionId = orderedLearning[index].id
-              const complete = activePathProgress.includes(missionId)
-              return (
-                <button
-                  className={`mission ${complete ? "complete" : ""}`}
-                  key={title}
-                  onClick={() => {
-                    setPathwayProgress((current) => ({
-                      ...current,
-                      [selectedCareer]: complete
-                        ? activePathProgress.filter((item) => item !== missionId)
-                        : [...activePathProgress, missionId],
-                    }))
-                    announce(
-                      complete
-                        ? "Pathway task marked incomplete"
-                        : "Pathway task complete — progress saved",
-                    )
-                  }}
-                  type="button"
-                >
-                  <span className="mission-node">
-                    {complete ? <Icon name="check" /> : index + 1}
-                  </span>
-                  <div>
-                    <span className="mission-meta">
-                      {type} · {time}
-                    </span>
-                    <strong>{title}</strong>
-                    <p>{text}</p>
-                  </div>
-                  <i>{complete ? "Done" : "Mark done"}</i>
-                </button>
-              )
-            })}
-          </div>
-          <div className="placeholder-note">
-            <Icon name="info" />
-            <p>
-              <strong>Practice plan:</strong> Use fictional data and the linked resources above. Completion is self-reported and remains in this session only.
-            </p>
-          </div>
-          <button
-            className="pathway-skill-cta"
-            onClick={() => openSkill(activePathway.skill)}
-            type="button"
-          >
-            <span className="cyan">
-              <Icon name="grid" />
-            </span>
-            <div>
-              <span className="eyebrow">FEATURED SKILL CARD</span>
-              <strong>
-                Continue your{" "}
-                {skills.find((skill) => skill.id === activePathway.skill)?.name}{" "}
-                missions
-              </strong>
-              <small>
-                {skillProgress[activePathway.skill]?.length ?? 0} of 3 learning
-                missions complete
-              </small>
-            </div>
-            <Icon name="arrow" />
-          </button>
+        <section className="main-screen pathway-screen">
+          <AppHeader title="My pathway" logoState={dashboardLogoState} />
+          <Pathway selected={intakeSkills} completed={activePathProgress} onToggle={(id) => {
+            const complete = activePathProgress.includes(id)
+            setPathwayProgress(current => ({...current, [selectedCareer]:complete ? activePathProgress.filter(item => item !== id) : [...activePathProgress,id]}))
+            announce(complete ? "Step marked incomplete" : "Step complete. Keep going at your own pace.")
+          }} />
         </section>
       )}
 
@@ -2071,7 +1907,6 @@ export default function App() {
           <AppHeader
             onBack={() => go(impactReturn)}
             title="AI outlook"
-            action={<span className="simulated-label">SOURCE CONTEXT</span>}
           />
           <div className="impact-heading">
             <span className="eyebrow">SCENARIO EXPLORER</span>
@@ -2189,159 +2024,11 @@ export default function App() {
       )}
 
       {screen === "logo-system" && (
-        <section className="living-system-screen">
-          <AppHeader
-            onBack={() => go("dashboard")}
-            title="Living logo system"
-            action={<span className="simulated-label">BRAND PREVIEW</span>}
-            logoState={logoPreview}
-          />
-          <div className="living-heading">
-            <span className="eyebrow">A BRAND THAT GROWS WITH YOU</span>
-            <h1>
-              One mark.
-              <br />
-              Six moments.
-            </h1>
-            <p>
-              The core A and its orbit companion always remain intact. Activity
-              changes its energy and expression, never the user’s progress or
-              standing.
-            </p>
-          </div>
-
-          <section className={`living-stage ${logoPreview}`}>
-            <div className="stage-orbit orbit-one" />
-            <div className="stage-orbit orbit-two" />
-            <div className="hero-living-mark">
-              <LivingMark
-                state={logoPreview}
-                label={`${logoStates.find((item) => item.id === logoPreview)?.name} Aiversecity logo`}
-              />
-            </div>
-            <div className="stage-copy">
-              <span>LIVE PREVIEW</span>
-              <h2>
-                {logoStates.find((item) => item.id === logoPreview)?.name}
-              </h2>
-              <p>
-                {logoStates.find((item) => item.id === logoPreview)?.subtitle}
-              </p>
-            </div>
-          </section>
-
-          <div
-            className="state-switcher"
-            role="radiogroup"
-            aria-label="Living logo state"
-          >
-            {logoStates.map((item, index) => (
-              <button
-                className={logoPreview === item.id ? "active" : ""}
-                key={item.id}
-                onClick={() => setLogoPreview(item.id)}
-                role="radio"
-                type="button"
-                aria-checked={logoPreview === item.id}
-              >
-                <span className="state-mini-mark">
-                  <LivingMark state={item.id} />
-                </span>
-                <span>
-                  <small>{String(index + 1).padStart(2, "0")}</small>
-                  <strong>{item.name}</strong>
-                  <i>{item.subtitle}</i>
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <section className="living-section">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">IN CONTEXT</span>
-                <h2>One state, every surface</h2>
-              </div>
-              <span className="signal-pill">
-                <Icon name="spark" size={13} /> {logoPreview}
-              </span>
-            </div>
-            <div className="context-grid">
-              <article className="context-card icon-context">
-                <div className="phone-wallpaper">
-                  <span className="app-icon">
-                    <LivingMark state={logoPreview} />
-                  </span>
-                  <strong>Aiversecity</strong>
-                </div>
-                <span>APP ICON · 60PX FLOOR</span>
-              </article>
-              <article className="context-card splash-context">
-                <div>
-                  <Logo state={logoPreview} />
-                  <i />
-                  <small>Mapping possible paths</small>
-                </div>
-                <span>SPLASH SCREEN</span>
-              </article>
-              <article className="context-card dashboard-context">
-                <div className="mini-dashboard">
-                  <div>
-                    <Logo state={logoPreview} />
-                    <span>KA</span>
-                  </div>
-                  <small>YOUR EXPLORATION HUB</small>
-                  <strong>Good to see you.</strong>
-                  <i>
-                    <em />
-                  </i>
-                </div>
-                <span>DASHBOARD HEADER</span>
-              </article>
-            </div>
-          </section>
-
-          <section className="living-section">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">STATE LOGIC</span>
-                <h2>Triggers & transitions</h2>
-              </div>
-              <span className="placeholder-chip">PROTOTYPE RULES</span>
-            </div>
-            <div className="trigger-list">
-              {logoStates.map((item, index) => (
-                <button
-                  className={logoPreview === item.id ? "active" : ""}
-                  key={item.id}
-                  onClick={() => setLogoPreview(item.id)}
-                  type="button"
-                >
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <strong>{item.name}</strong>
-                    <p>{item.trigger}</p>
-                  </div>
-                  <small>{item.transition}</small>
-                  <Icon name="arrow" size={17} />
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <div className="rest-principle">
-            <span>
-              <Icon name="spark" size={22} />
-            </span>
-            <div>
-              <span className="eyebrow">CORE PRINCIPLE</span>
-              <h2>Rest is a state, not a setback.</h2>
-              <p>
-                Inactivity only quiets the mark. Cards, missions, milestones,
-                and recommendations remain exactly where the user left them.
-              </p>
-            </div>
-          </div>
+        <section className="main-screen identity-screen">
+          <AppHeader onBack={() => go("dashboard")} title="Your identity" logoState={dashboardLogoState} />
+          <div className="identity-hero"><LivingMark state={dashboardLogoState} label="Your Aiversecity identity" /><h1>A little growth,<br />every day.</h1><p>Your mark reflects your progress. Rest never takes it away.</p></div>
+          <div className="identity-states">{logoStates.map(item => <div key={item.id}><LivingMark state={item.id} /><strong>{item.name}</strong></div>)}</div>
+          <details className="pathway-notes"><summary>About the home-screen icon</summary><p>Aiversecity uses the A and orbit mark as its home-screen icon. These six expressions appear inside the app. Your phone controls the installed icon and may keep a cached copy.</p></details>
         </section>
       )}
 
@@ -2361,7 +2048,7 @@ export default function App() {
             }
           />
           <div className="dashboard-greeting">
-            <span className="eyebrow">YOUR EXPLORATION HUB</span>
+            <span className="eyebrow">YOUR NEXT CHAPTER</span>
             <h1>Good to see you{name ? `, ${name}` : ""}.</h1>
             <p>Pick up where you left off or compare another possible path.</p>
           </div>
@@ -2386,7 +2073,7 @@ export default function App() {
           <div className="dashboard-section">
             <div className="section-heading">
               <div>
-                <span className="eyebrow">SAVED SHORTLIST</span>
+                <span className="eyebrow">CAREER EXPLORATION</span>
                 <h2>Explore your paths</h2>
               </div>
               <button onClick={() => go("recommendations")} type="button">
@@ -2441,8 +2128,8 @@ export default function App() {
               <span>
                 <LivingMark state={dashboardLogoState} />
               </span>
-              <strong>Living logo</strong>
-              <small>Preview six brand states</small>
+              <strong>Your identity</strong>
+              <small>A mark that grows with you</small>
             </button>
             <button onClick={openImpact} type="button">
               <span>
@@ -2452,13 +2139,7 @@ export default function App() {
               <small>Compare 3 uncertain adoption scenarios</small>
             </button>
           </div>
-          <div className="demo-banner">
-            <Icon name="info" />
-            <p>
-              <strong>Prototype mode</strong> Results and progress are stored
-              only for this session.
-            </p>
-          </div>
+          <details className="pathway-notes dashboard-notes"><summary>About your progress</summary><p>Your responses guide exploration, not a verified career assessment. Use fictional data. Progress stays in this visit and clears when you reload.</p></details>
         </section>
       )}
 
