@@ -1,4 +1,5 @@
 import { assess } from "./scoring"
+import { NewsContext } from "./NewsContext"
 import {
   adoptionScenarios,
   careerDefinitions,
@@ -274,6 +275,7 @@ export function TrendPanel({
         · global task-exposure context; exposure does not establish job loss.
         Scenarios are qualitative assumptions without probabilities.
       </p>
+      <NewsContext />
     </section>
   )
 }
