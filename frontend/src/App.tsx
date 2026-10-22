@@ -1,8 +1,9 @@
 import { Pathway } from "./mvp/Pathway"
 import { useEffect, useState } from "react"
-import { assess, learning } from "./mvp/scoring"
+import { assess } from "./mvp/scoring"
+import { adoptionScenarios, careerDefinitions, findSkill, rankCareers, type ScenarioId } from "./mvp/domain1"
 import { parseTrend, type Trend } from "./mvp/trends"
-import { Evidence, TrendPanel, LearningPlan, SdgMapping } from "./mvp/Evidence"
+import { Evidence, RoleMatches, ScenarioSelector, TrendPanel, SdgMapping } from "./mvp/Evidence"
 
 type Screen = "splash" | "welcome" | "onboarding" | "skills-intake" | "assessment-intro" | "assessment" | "analysis" | "capability" | "recommendations" | "career" | "pathway" | "dashboard" | "skills" | "skill" | "logo-system" | "impact"
 
@@ -328,7 +329,7 @@ const conceptCareers = [
   {
     id: "software",
     rank: "02",
-    title: "Software Engineer",
+    title: "Software Developer",
     domain: "PRODUCTS & SYSTEMS",
     accent: "violet",
     summary:
@@ -337,14 +338,14 @@ const conceptCareers = [
     sdgs: ["4 · Quality Education", "8 · Decent Work", "9 · Innovation"],
   },
   {
-    id: "ai",
+    id: "operations",
     rank: "03",
-    title: "AI Engineer",
-    domain: "AI & APPLIED SYSTEMS",
+    title: "Operations Research Analyst",
+    domain: "MODELLING & DECISIONS",
     accent: "orange",
     summary:
-      "Design and evaluate AI-enabled systems for useful, responsible outcomes.",
-    why: "Your choices combined pattern recognition, evidence checking, and an interest in improving technical systems.",
+      "Use data, mathematics, and models to compare options and support operational decisions.",
+    why: "Your response pattern shows signals that can be useful when framing and checking decision models.",
     sdgs: ["4 · Quality Education", "8 · Decent Work", "9 · Innovation"],
   },
 ]
@@ -360,7 +361,7 @@ const conceptSkills = [
     description:
       "Ask structured questions of data stored in relational databases.",
     time: "6–8 hours",
-    course: "Intro to SQL for Analysis · Course placeholder",
+    course: "PostgreSQL querying tutorial",
     pressure: "Moderate task pressure",
     trend:
       "Query generation is accelerating; validation and business context remain important.",
@@ -381,7 +382,7 @@ const conceptSkills = [
     description:
       "Clean, organize, calculate, and inspect everyday business data.",
     time: "4–6 hours",
-    course: "Spreadsheet Foundations · Course placeholder",
+    course: "pandas getting-started tutorials",
     pressure: "Moderate task pressure",
     trend:
       "Automation supports formulas and cleanup; judgment about structure still matters.",
@@ -401,7 +402,7 @@ const conceptSkills = [
     icon: "chart" as IconName,
     description: "Turn findings into clear visuals that support decisions.",
     time: "5–7 hours",
-    course: "Visual Storytelling Basics · Course placeholder",
+    course: "pandas plotting tutorial",
     pressure: "Lower task pressure",
     trend:
       "Tools can draft charts quickly; audience judgment and narrative remain differentiators.",
@@ -422,7 +423,7 @@ const conceptSkills = [
     description:
       "Reason about variation, uncertainty, and evidence without overclaiming.",
     time: "8–10 hours",
-    course: "Practical Statistics · Course placeholder",
+    course: "OpenStax Introductory Business Statistics",
     pressure: "Lower task pressure",
     trend:
       "AI can calculate quickly, while assumptions and interpretation need careful oversight.",
@@ -441,13 +442,13 @@ const conceptSkills = [
     id: "programming",
     name: "Programming",
     career: "software",
-    careerName: "Software Engineer",
+    careerName: "Software Developer",
     accent: "violet",
     icon: "grid" as IconName,
     description:
       "Express solutions as readable, maintainable instructions for computers.",
     time: "10–12 hours",
-    course: "Programming Foundations · Course placeholder",
+    course: "MDN Learn Web Development",
     pressure: "High task assistance",
     trend:
       "Code generation is expanding; decomposition, review, and product judgment gain value.",
@@ -462,13 +463,13 @@ const conceptSkills = [
     id: "debugging",
     name: "Debugging",
     career: "software",
-    careerName: "Software Engineer",
+    careerName: "Software Developer",
     accent: "violet",
     icon: "compass" as IconName,
     description:
       "Find, isolate, and explain why software behaves unexpectedly.",
     time: "5–7 hours",
-    course: "Debugging Mindset · Course placeholder",
+    course: "MDN debugging JavaScript",
     pressure: "Moderate task pressure",
     trend:
       "AI can suggest fixes; reproducible investigation and root-cause reasoning remain central.",
@@ -483,13 +484,13 @@ const conceptSkills = [
     id: "system-design",
     name: "System Design",
     career: "software",
-    careerName: "Software Engineer",
+    careerName: "Software Developer",
     accent: "violet",
     icon: "route" as IconName,
     description:
       "Shape components and trade-offs into a dependable technical system.",
     time: "8–10 hours",
-    course: "Systems Thinking for Developers · Course placeholder",
+    course: "MDN how the web works",
     pressure: "Lower task pressure",
     trend:
       "Generated options increase; evaluating constraints and trade-offs becomes more important.",
@@ -508,12 +509,12 @@ const conceptSkills = [
     id: "testing",
     name: "Testing",
     career: "software",
-    careerName: "Software Engineer",
+    careerName: "Software Developer",
     accent: "violet",
     icon: "check" as IconName,
     description: "Design checks that make software behavior safer to change.",
     time: "4–6 hours",
-    course: "Practical Software Testing · Course placeholder",
+    course: "Node.js test runner documentation",
     pressure: "Moderate task pressure",
     trend:
       "Test generation is improving; meaningful coverage and risk judgment still need people.",
@@ -527,17 +528,17 @@ const conceptSkills = [
   {
     id: "python",
     name: "Python",
-    career: "ai",
-    careerName: "AI Engineer",
+    career: "operations",
+    careerName: "Operations Research Analyst",
     accent: "orange",
     icon: "grid" as IconName,
     description:
       "Build readable data and AI workflows in a widely used language.",
     time: "10–12 hours",
-    course: "Python for AI Workflows · Course placeholder",
+    course: "Python tutorial",
     pressure: "High task assistance",
     trend:
-      "AI can draft code; reliable integration, review, and domain logic remain important.",
+      "Use small scripts to inspect data and explain assumptions in a model.",
     adapt: ["Code review", "Data handling", "Workflow design"],
     missions: [
       "Transform a small CSV file",
@@ -546,96 +547,79 @@ const conceptSkills = [
     ],
   },
   {
-    id: "machine-learning",
-    name: "Machine Learning",
-    career: "ai",
-    careerName: "AI Engineer",
+    id: "model-formulation",
+    name: "Model Formulation",
+    career: "operations",
+    careerName: "Operations Research Analyst",
     accent: "orange",
     icon: "spark" as IconName,
     description:
-      "Frame prediction problems and train models with appropriate data.",
+      "State a decision objective, variables, constraints, and assumptions.",
     time: "12–16 hours",
-    course: "Applied ML Foundations · Course placeholder",
+    course: "Google OR-Tools employee scheduling guide",
     pressure: "Moderate task pressure",
     trend:
-      "Model building is becoming accessible; problem framing and data quality grow in importance.",
+      "Model formulation connects a clearly defined decision to its constraints.",
     adapt: ["Problem framing", "Data quality", "Baseline comparison"],
     missions: [
-      "Define a prediction target",
-      "Train a simple baseline model",
-      "Compare two model results",
+      "Define a fictional scheduling objective",
+      "Write two explicit constraints",
+      "Explain an assumption that could change the result",
     ],
   },
   {
-    id: "model-evaluation",
-    name: "Model Evaluation",
-    career: "ai",
-    careerName: "AI Engineer",
+    id: "model-validation",
+    name: "Model Validation",
+    career: "operations",
+    careerName: "Operations Research Analyst",
     accent: "orange",
     icon: "chart" as IconName,
     description:
-      "Test whether an AI system is useful, reliable, and appropriate for its context.",
+      "Check model outputs against constraints and a simple baseline.",
     time: "6–8 hours",
-    course: "Responsible Model Evaluation · Course placeholder",
+    course: "Google OR-Tools examples and guides",
     pressure: "Lower task pressure",
     trend:
-      "As models spread, rigorous evaluation and human oversight become more valuable.",
+      "Validation checks whether the proposed result follows the stated model.",
     adapt: ["Evaluation design", "Bias awareness", "Failure analysis"],
     missions: [
-      "Choose a useful evaluation metric",
-      "Review ten mock model outputs",
-      "Document a failure pattern",
+      "Check each fictional schedule constraint",
+      "Compare a solver result with a simple baseline",
+      "Document one case where the model is insufficient",
     ],
   },
   {
-    id: "mlops",
-    name: "MLOps",
-    career: "ai",
-    careerName: "AI Engineer",
+    id: "optimization",
+    name: "Optimization Methods",
+    career: "operations",
+    careerName: "Operations Research Analyst",
     accent: "orange",
     icon: "route" as IconName,
     description:
-      "Operate model workflows reliably from experiment to production.",
+      "Use a solver to compare options under explicit constraints.",
     time: "10–14 hours",
-    course: "MLOps Starter Lab · Course placeholder",
+    course: "Google OR-Tools linear optimization guide",
     pressure: "Moderate task pressure",
     trend:
-      "Automation expands deployment options; monitoring and accountability stay essential.",
+      "An optimization result is meaningful only under its chosen objective and constraints.",
     adapt: ["Monitoring", "Version control", "Incident response"],
     missions: [
-      "Version a mock model artifact",
-      "Design a monitoring checklist",
-      "Plan a safe rollback",
+      "Solve a tiny fictional assignment problem",
+      "Explain the objective and constraints",
+      "Describe one limitation of the model",
     ],
   },
 ]
 
-const careers = conceptCareers.filter(c => c.id === "data")
-const skills = conceptSkills.filter(s => s.career === "data")
-
-const impactScenarios = [
-  {
-    id: "assistive",
-    name: "Assistive adoption",
-    horizon: "AI supports selected tasks",
-    summary:
-      "Routine drafting and lookup accelerate while people retain workflow ownership.",
-  },
-  {
-    id: "accelerated",
-    name: "Accelerated automation",
-    horizon: "More tasks become automated",
-    summary:
-      "Review, integration, quality control, and domain judgment become stronger differentiators.",
-  },
-  {
-    id: "uneven",
-    name: "Uneven adoption",
-    horizon: "Adoption varies by team",
-    summary:
-      "Tool fluency matters alongside the ability to work effectively without automated support.",
-  },
-] as const
+const careers = conceptCareers.map(career => {
+  const definition = careerDefinitions.find(item => item.id === career.id)!
+  return {...career,title:definition.title,summary:definition.summary}
+})
+const skills = conceptSkills.map(skill => {
+  const definition = findSkill(skill.id)!
+  return {...skill,name:definition.name,description:definition.description,course:definition.resource,
+    time:`Suggested practice: ${definition.hours} hours`,careerName:careerDefinitions.find(item=>item.id===skill.career)!.title}
+})
 
 function AppHeader({
   onBack,
@@ -787,7 +771,7 @@ function QuestionVisual({ type }: { type: string }) {
 
 function CareerObject({ type }: { type: string }) {
   return (
-    <div className={`career-object ${type}`} aria-hidden="true">
+    <div className={`career-object ${type === "operations" ? "ai" : type}`} aria-hidden="true">
       <div className="object-glow" />
       {type === "data" && (
         <>
@@ -812,7 +796,7 @@ function CareerObject({ type }: { type: string }) {
           </span>
         </>
       )}
-      {type === "ai" && (
+      {type === "operations" && (
         <>
           <div className="object-shield">
             <Icon name="check" size={29} />
@@ -911,7 +895,7 @@ export default function App() {
     useState<Record<string, string[]>>({
       data: [],
       software: [],
-      ai: [],
+      operations: [],
     })
   const [selectedSkill, setSelectedSkill] = useState("sql")
   const [skillReturn, setSkillReturn] = useState<Screen>("skills")
@@ -921,8 +905,7 @@ export default function App() {
     sql: [],
     excel: [],
   })
-  const [impactScenario, setImpactScenario] =
-    useState<typeof impactScenarios[number]["id"]>("assistive")
+  const [impactScenario, setImpactScenario] = useState<ScenarioId>("assistive")
   const [impactReturn, setImpactReturn] = useState<Screen>("dashboard")
   const [trend, setTrend] = useState<Trend | null>(null)
   const [trendStatus, setTrendStatus] = useState("Loading reviewed source snapshot…")
@@ -931,8 +914,9 @@ export default function App() {
     try {
       const response = await fetch("/api/trends", {cache:"no-store"})
       if (!response.ok) throw new Error("Unavailable")
-      setTrend(parseTrend(await response.json()))
-      setTrendStatus("Live BLS source retrieved (may be cached up to one hour).")
+      const record=parseTrend(await response.json())
+      setTrend(record)
+      setTrendStatus(record.cacheStatus==='stale' ? 'Live refresh failed. Showing the last successful retrieval with its original timestamp.' : 'BLS source record received. A 30-minute cache may apply; the retrieval timestamp is shown below.')
     } catch {
       setTrendStatus("Live refresh unavailable. Keeping the dated snapshot or last successful source; no update claimed.")
     }
@@ -945,8 +929,14 @@ export default function App() {
     return () => {active=false}
   }, [])
   const assessment = assess(answers)
-  const supported = assessment.kind === "complete" && trend !== null
-  const recommendation = !supported ? "Insufficient evidence — complete assessment and load a dated trend source." : trend.growthPercent > 0 ? "Worth exploring: response alignment plus a positive related U.S. job signal. Validate through practical tasks." : "Explore cautiously: the related job signal is flat or declining. Test transferable skills and review local opportunities."
+  const supported = assessment.kind === "complete"
+  const careerRankings = rankCareers(answers, intakeSkills, impactScenario)
+  const selectedRanking = careerRankings.kind === "complete"
+    ? careerRankings.rankings.find((item) => item.role.id === selectedCareer)
+    : undefined
+  const recommendation = selectedRanking
+    ? `${selectedRanking.role.title} is one path to explore under the selected scenario, based on the response signals shown below. This score is not a probability of employment.`
+    : "Complete the assessment to see explainable career matches."
   const [feedback, setFeedback] = useState("")
 
   const go = (next: Screen) => {
@@ -1029,9 +1019,10 @@ export default function App() {
 
   const activeCareer =
     careers.find((career) => career.id === selectedCareer) ?? careers[0]
+  const activeRole = careerDefinitions.find((career) => career.id === selectedCareer) ?? careerDefinitions[0]
   const activeSkill =
     skills.find((skill) => skill.id === selectedSkill) ?? skills[0]
-  const activeResource = learning.find(item => item.id === activeSkill.id) ?? learning[0]
+  const activeResource = findSkill(activeSkill.id) ?? careerDefinitions[0].skills[0]
   const activePathProgress = pathwayProgress[selectedCareer] ?? []
   const totalSkillMissions = Object.values(skillProgress).reduce(
     (total, missions) => total + missions.length,
@@ -1396,7 +1387,7 @@ export default function App() {
             {[
               "Reviewing response patterns",
               "Grouping capability signals",
-              "Preparing Data Analyst exploration",
+              "Ranking evidence-backed career explorations",
             ].map((label, index) => (
               <div
                 className={
@@ -1504,7 +1495,7 @@ export default function App() {
             </p>
           </div>
           <PrimaryButton onClick={() => go("recommendations")}>
-            Explore Data Analyst
+            Explore career matches
           </PrimaryButton>
         </section>
       )}
@@ -1521,41 +1512,12 @@ export default function App() {
               <br />
               to begin exploring.
             </h1>
-            <p>
-              One supported role in this MVP. Other careers require separate evidence and reviewed rubrics.
-            </p>
+            <p>Compare three role-specific explanations. These are exploration scores from a small editorial rubric, not employment probabilities.</p>
           </div>
-          <section className="mvp-panel"><h2>Data Analyst recommendation</h2><p>{recommendation}</p><p>{assessment.kind === "complete" ? `Exploration alignment ${assessment.match}/100 · low confidence` : "Assessment incomplete"}</p><button type="button" onClick={() => {setQuestion(0);setAnswers([]);setSelectedAnswer(null);setPathwayProgress({});go("assessment-intro")}}>Retake assessment</button></section>
+          <ScenarioSelector scenario={impactScenario} onChange={setImpactScenario} />
+          <RoleMatches answers={answers} selectedSkills={intakeSkills} scenario={impactScenario} onSelect={(roleId) => openCareer(roleId)} />
           <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} />
-          <div className="career-track">
-            {careers.map((career) => (
-              <button
-                disabled={!supported}
-                className={`career-card ${career.accent}`}
-                key={career.id}
-                onClick={() => openCareer(career.id)}
-                type="button"
-              >
-                <span className="card-meta">
-                  <span>{career.rank}</span>
-                  {career.id === "data" && (
-                    <b>
-                      <Icon name="spark" size={12} /> Supported exploration
-                    </b>
-                  )}
-                </span>
-                <span className="card-copy">
-                  <small>{career.domain}</small>
-                  <strong>{career.title}</strong>
-                  <span>{career.summary}</span>
-                </span>
-                <CareerObject type={career.id} />
-                <span className="card-arrow">
-                  <Icon name="arrow" />
-                </span>
-              </button>
-            ))}
-          </div>
+          <SdgMapping />
           <div className="why-panel">
             <span className="why-icon">
               <Icon name="spark" />
@@ -1623,6 +1585,8 @@ export default function App() {
             {[
               ["all", "All skills"],
               ["data", "Data"],
+              ["software", "Software"],
+              ["operations", "Operations research"],
 
             ].map(([id, label]) => (
               <button
@@ -1752,8 +1716,10 @@ export default function App() {
                   </section>
 
                   <section className="skill-panel course-panel">
-                    <div><span className="eyebrow">LEARNING RESOURCE</span><h2>{activeResource.resource}</h2><p>External practice resource checked 21 October 2026. Use synthetic data. Completion is not verified proficiency.</p><a href={activeResource.url} target="_blank" rel="noreferrer">Open learning resource</a></div>
+                    <div><span className="eyebrow">LEARNING RESOURCE</span><h2>{activeResource.resource}</h2><p>Free public learning material checked 22 October 2026. Use synthetic data. Completion is not verified proficiency.</p><a href={activeResource.url} target="_blank" rel="noreferrer">Open learning resource</a></div>
                   </section>
+
+                  <section className="skill-panel"><h2>Potential SDG contribution</h2><p><a href="https://sdgs.un.org/goals/goal4" target="_blank" rel="noreferrer">UN Target {activeResource.sdg.target}</a>: {activeResource.sdg.reason}</p><p>This is a proposed learning contribution. No SDG impact has been measured.</p></section>
 
                   <section className="skill-panel outlook-panel">
                     <h2>Build skills that travel.</h2><p>Practice checking results and explaining your decisions alongside the tools. AI adoption varies; exposure is not a prediction of job loss.</p>
@@ -1784,28 +1750,16 @@ export default function App() {
               <span className="eyebrow">WHY IT SURFACED</span>
               <h2>Your evidence connection</h2>
               <p>{recommendation}</p><Evidence answers={answers} />
+              <p>{activeRole.sourceNote} <a href={activeRole.sourceUrl} target="_blank" rel="noreferrer">Occupation evidence: {activeRole.source}</a></p>
               <div className="evidence-chips">
-                <span>Pattern recognition</span>
-                <span>Structured thinking</span>
-                <span>Evidence focus</span>
+                {selectedRanking?.breakdown.filter((part) => part.contribution > 0).sort((a, b) => b.contribution - a.contribution).slice(0, 3).map((part) => <span key={part.dimension}>{part.dimension}</span>)}
               </div>
             </div>
             <div className="detail-section">
               <span className="eyebrow">THE WORK</span>
               <h2>What you might do</h2>
               <ul>
-                <li>
-                  <Icon name="check" size={16} />
-                  Turn questions into measurable requirements
-                </li>
-                <li>
-                  <Icon name="check" size={16} />
-                  Find useful patterns in information or processes
-                </li>
-                <li>
-                  <Icon name="check" size={16} />
-                  Explain findings to people with different expertise
-                </li>
+                {activeRole.workExamples.map((example) => <li key={example}><Icon name="check" size={16} />{example}</li>)}
               </ul>
             </div>
             <div className="detail-grid">
@@ -1839,12 +1793,11 @@ export default function App() {
               </div>
               <div className="sdg-map">
                 <span>PROPOSED SDG ALIGNMENT</span>
-                {activeCareer.sdgs.map((sdg) => (
-                  <b key={sdg}>{sdg}</b>
+                {activeRole.sdgs.map((sdg) => (
+                  <b key={sdg.target}>Target {sdg.target}</b>
                 ))}
                 <small>
-                  Illustrative alignment only; validation criteria will be added
-                  later.
+                  Proposed contribution only. No SDG outcome is measured.
                 </small>
               </div>
             </div>
@@ -1853,7 +1806,7 @@ export default function App() {
               <h2>Cards for this pathway</h2>
               <p>
                 Open a skill to view practical missions, learning time, and a
-                placeholder future outlook.
+                source-linked resource.
               </p>
               <div className="career-skill-links">
                 {skills
@@ -1882,7 +1835,7 @@ export default function App() {
               </div>
             </div>
           </div>
-          <LearningPlan selected={intakeSkills} /><SdgMapping />
+          <SdgMapping roleId={activeRole.id} />
           <div className="sticky-action">
             <PrimaryButton disabled={!supported} onClick={() => go("pathway")}>
               Start beginner pathway
@@ -1894,7 +1847,8 @@ export default function App() {
       {screen === "pathway" && (
         <section className="main-screen pathway-screen">
           <AppHeader title="My pathway" logoState={dashboardLogoState} />
-          <Pathway selected={intakeSkills} completed={activePathProgress} onToggle={(id) => {
+          <button className="pathway-role-change" type="button" onClick={()=>go('recommendations')}>Change career</button>
+          <Pathway scenarioControl={<ScenarioSelector scenario={impactScenario} onChange={setImpactScenario} />} roleId={activeRole.id} scenario={impactScenario} selected={intakeSkills} onProfileChange={setIntakeSkills} completed={activePathProgress} onToggle={(id) => {
             const complete = activePathProgress.includes(id)
             setPathwayProgress(current => ({...current, [selectedCareer]:complete ? activePathProgress.filter(item => item !== id) : [...activePathProgress,id]}))
             announce(complete ? "Step marked incomplete" : "Step complete. Keep going at your own pace.")
@@ -1916,110 +1870,18 @@ export default function App() {
               work change?
             </h1>
             <p>
-              Explore multiple possibilities rather than one unsupported
-              prediction. Scenario assumptions are not forecasts or assigned probabilities. Source context is dated below.
+              Compare two qualitative assumptions. Neither is a forecast, and neither has an assigned probability. Selecting one updates role weights and learning priorities.
             </p>
           </div>
-          <div
-            className="scenario-tabs"
-            role="tablist"
-            aria-label="AI disruption scenario"
-          >
-            {impactScenarios.map((scenario) => (
-              <button
-                className={impactScenario === scenario.id ? "active" : ""}
-                key={scenario.id}
-                onClick={() => setImpactScenario(scenario.id)}
-                role="tab"
-                type="button"
-                aria-selected={impactScenario === scenario.id}
-              >
-                <strong>{scenario.name}</strong>
-                <small>{scenario.horizon}</small>
-              </button>
-            ))}
-          </div>
-          <div className="scenario-summary">
-            <span>
-              <Icon name="spark" />
-            </span>
-            <div>
-              <span className="eyebrow">SELECTED ASSUMPTION</span>
-              <h2>
-                {
-                  impactScenarios.find(
-                    (scenario) => scenario.id === impactScenario,
-                  )?.name
-                }
-              </h2>
-              <p>
-                {
-                  impactScenarios.find(
-                    (scenario) => scenario.id === impactScenario,
-                  )?.summary
-                }
-              </p>
-            </div>
-          </div>
-          <div className="impact-careers">
-            {careers.map((career) => {
-              const signals =
-                career.id === "data"
-                  ? [
-                      "Drafting queries and summaries",
-                      "Problem framing and evidence checks",
-                      "SQL validation · stakeholder context",
-                    ]
-                  : career.id === "software"
-                    ? [
-                        "Boilerplate code and documentation",
-                        "Architecture and quality ownership",
-                        "Code review · system design",
-                      ]
-                    : [
-                        "Model setup and experiment scaffolds",
-                        "Evaluation and responsible deployment",
-                        "Failure analysis · MLOps",
-                      ]
-              return (
-                <article className={career.accent} key={career.id}>
-                  <div className="impact-career-title">
-                    <span>
-                      <Icon
-                        name={
-                          career.id === "data"
-                            ? "chart"
-                            : career.id === "software"
-                              ? "grid"
-                              : "spark"
-                        }
-                      />
-                    </span>
-                    <div>
-                      <small>{career.domain}</small>
-                      <h2>{career.title}</h2>
-                    </div>
-                  </div>
-                  <div className="impact-signal">
-                    <span>TASKS LIKELY TO CHANGE</span>
-                    <p>{signals[0]}</p>
-                  </div>
-                  <div className="impact-signal">
-                    <span>HUMAN VALUE TO STRENGTHEN</span>
-                    <p>{signals[1]}</p>
-                  </div>
-                  <div className="impact-signal">
-                    <span>ADAPTATION FOCUS</span>
-                    <p>{signals[2]}</p>
-                  </div>
-                  <button onClick={() => openCareer(career.id)} type="button">
-                    View career evidence <Icon name="arrow" size={16} />
-                  </button>
-                </article>
-              )
-            })}
-          </div>
-          <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} /><SdgMapping />
+          <ScenarioSelector scenario={impactScenario} onChange={setImpactScenario} />
+          <section className="mvp-panel scenario-method">
+            <h2>What changes when you switch?</h2>
+            <p>{adoptionScenarios.find((scenario) => scenario.id === impactScenario)?.limitation}</p>
+            <p>In the accelerated scenario, the same assessment signals are reweighted toward evidence checking and collaborative explanation. The pathway moves verification and communication skills earlier when their prerequisites are ready. These are transparent product rules, not claims that any task or occupation will be automated.</p>
+          </section>
+          <RoleMatches answers={answers} selectedSkills={intakeSkills} scenario={impactScenario} onSelect={(roleId) => openCareer(roleId)} />
+          <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} />
+          <SdgMapping />
         </section>
       )}
 
@@ -2060,9 +1922,9 @@ export default function App() {
             <div>
               <span className="eyebrow">CONTINUE YOUR PATH</span>
               <h2>{activeCareer.title} foundations</h2>
-              <p>{activePathProgress.length} of 4 beginner missions complete</p>
+              <p>{activePathProgress.length} of {activeRole.skills.length+1} beginner practice steps complete</p>
               <i>
-                <em style={{ width: `${activePathProgress.length * 25}%` }} />
+                <em style={{ width: `${activePathProgress.length / (activeRole.skills.length+1) * 100}%` }} />
               </i>
             </div>
             <span className="continue-icon">
