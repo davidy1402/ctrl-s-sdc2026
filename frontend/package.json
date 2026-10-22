@@ -14,6 +14,7 @@
     "refresh:trends": "node --import tsx scripts/refresh-trends.ts"
   },
   "dependencies": {
+    "fast-xml-parser": "^5.11.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

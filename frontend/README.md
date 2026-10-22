@@ -4,7 +4,7 @@ This branch keeps the Figma-integrated React/Vite interface and connects one syn
 
 ## Run
 
-Node 22.12+ or 24, npm:
+From `frontend/`, use Node 22.12+ or 24 and npm (from the repository root use `npm run setup` then `npm run dev`):
 
 ```sh
 npm ci
@@ -82,3 +82,22 @@ This is an unvalidated educational exploration prototype. The rubric and scenari
 Occupation, SDG, and learning references were checked 22 October 2026; duration values are local estimates. Rania’s proposed e-LATiH links returned HTTP 405 during verification, so their exact content, suitability, and price remain unconfirmed and are not presented as verified course evidence. No Python/Pandas backend, headline-derived disruption index, six-dimension assessment replacement, or RunPod placeholder has been added.
 
 The team must review and understand this contribution and include the actual development assistance from OpenAI Codex (GPT-6 family) in the required declarations. No runtime model is used. See the repository’s competition notes for unresolved sponsor and deadline questions.
+
+
+## Official news context and development setup — 22 October 2026
+
+`GET /api/news?scope=global|malaysia` fetches two fixed official public RSS sources. The UI fetches when the source panel mounts, the selected scope changes, or Refresh news is pressed. There is no background polling, assessment upload, or arbitrary URL fetching. A Vite middleware serves the endpoint locally and in preview; `api/news.ts` serves it on Vercel. A plain static-only host cannot run these APIs.
+
+- [UN News economic development RSS](https://news.un.org/feed/subscribe/en/news/topic/economic-development/feed/rss.xml): retain titles containing whole-word AI or “artificial intelligence”. Scope: global AI news, not an occupation-demand measure.
+- [MOSTI RSS](https://www.mosti.gov.my/en/feed/): retain titles matching whole-word AI, artificial intelligence, kecerdasan, digital, STEM, robot, latihan, or kemahiran, case-insensitively. Scope: Malaysian science/skills announcements, often in Malay, **not a hiring feed**. Exact title matching can miss relevant stories or include broad context.
+- [TalentCorp workforce impact study launch](https://www.talentcorp.com.my/resources/press-releases/talentcorp-launches-landmark-study-on-workforce-impact-of-ai-digitalisation-and-green-economy/): a separately dated Malaysian workforce reference (18 November 2024), not a live headline.
+
+Only up to three dated titles, publisher links and publication timestamps are shown per feed. They are deduplicated by URL and ordered newest first. Descriptions, article bodies, unsafe/nonpublisher links, future dates and entries without parseable publication dates are omitted. A response with no matching titles displays an explicit empty state. Retrieval time in MYT is separate from publication time; a fresh retrieval can contain old news.
+
+The server cache is per scope and per process for 30 minutes. Simultaneous same-scope fetches share one request. A failed refresh preserves the original successful timestamp and marks the response stale. A 60-second failure cooldown avoids immediate repeated upstream retries. Cold starts have no persistent fallback and return 503 when upstream is unavailable. Browser state retains the last successful record during a request failure; refresh/reload can lose it. HTTP responses use `no-store`; the cache is controlled by the server. Fetches time out after eight seconds; XML is limited to 1 MiB and rejects entity/DOCTYPE declarations. `fast-xml-parser` (MIT) parses XML only on the server; metadata is validated before rendering as text.
+
+News does not modify scores, verify skills, calculate a disruption index or estimate employment probabilities. Existing deterministic adoption scenarios remain the mechanism for comparing learning priorities. A separate evidence-backed methodology would be needed before using article content in a scoring rule. Google News RSS was checked but excluded: its response carries a personal, noncommercial feed-reader restriction.
+
+`.replit` configures a development Run command and port mapping using the [official configuration format](https://docs.replit.com/features/project-setup/configuration). Only the exact `REPLIT_DEV_DOMAIN`, when supplied, is additionally allowed by Vite. No wildcard host allowance or production deployment command is introduced. The Run command installs the frontend lockfile and starts Vite; actual Replit import/run, screenshots and usage declaration must still be completed by the team. Node 22.12+ is required; check the Replit runtime version before demoing.
+
+The teammate's six dimensions and two named onboarding paths are not features of the incumbent assessment. Replacing that rubric would require new question evidence and calibration. The current contextual intake and three-signal matrix are retained. Python/Pandas and a RunPod worker would duplicate the deterministic TypeScript work without a GPU workload; no placeholder integration or platform-use claim is added. Previously unverified e-LATiH course links remain unverified; existing source-backed free learning resources remain available.

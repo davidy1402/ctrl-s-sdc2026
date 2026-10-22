@@ -610,3 +610,15 @@ h1, h2, h3 { text-wrap: balance; letter-spacing: -.035em; }
 
 .bottom-nav button { color: #aeb7c3; }
 .bottom-nav button.active { color: var(--cream); }
+
+.news-context { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border, #344047); }
+.news-context h3 { font-size: 1.25rem; margin: 0 0 .75rem; }
+.news-controls { display: flex; align-items: end; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+.news-controls label { display: grid; gap: .5rem; flex: 1 1 14rem; }
+.news-controls select { width: 100%; min-height: 44px; border: 1px solid #5b737e; background: #14232b; color: #f4f8fa; border-radius: 10px; padding: .6rem .75rem; font: inherit; }
+.news-controls button { min-height: 44px; }
+.news-headlines { list-style: none; padding: 0; }
+.news-headlines li { padding: .9rem 0; border-bottom: 1px solid #344047; overflow-wrap: anywhere; }
+.news-headlines small { display: block; margin-top: .5rem; color: #b8cad2; }
+.news-context a { overflow-wrap: anywhere; }
+.news-controls select:focus-visible { outline: 2px solid #c6ff4a; outline-offset: 3px; }

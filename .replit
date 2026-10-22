@@ -1,0 +1,8 @@
+# Development preview only. Actual Replit use/proof must be recorded separately.
+modules = ["nodejs-22"]
+entrypoint = "frontend/src/main.tsx"
+run = "npm run setup && npm run dev -- --host 0.0.0.0 --port 5173 --strictPort"
+
+[[ports]]
+localPort = 5173
+externalPort = 80
