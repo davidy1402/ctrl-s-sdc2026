@@ -16,8 +16,20 @@ Use the existing WhatsApp group for reminders and quick discussion. Keep accepte
 
 ## Current state
 
-The Figma UI has been integrated under `frontend/`. A functional Data Analyst exploration slice is available on `codex/aiversecity-functional-mvp`: four responses → deterministic evidence and low-confidence labels → dated BLS source context → explainable recommendation → skills gaps and personalized practice order, adoption scenarios and proposed SDG links. See [run instructions, sources and limitations](frontend/README.md) and [implementation review record](docs/MVP-IMPLEMENTATION.md).
+The Figma-integrated UI lives in `frontend/`. The synthetic MVP supports assessment → three explainable career matches → role-specific pathways → scenario comparison, with proposed SDG mappings for every supported role and skill. It fetches U.S. BLS occupation context and optional official global AI/Malaysian science-and-skills news. See [run instructions, sources and limitations](frontend/README.md) and [implementation review](docs/MVP-IMPLEMENTATION.md).
 
+### Run locally from the repository root
+
+Use Node 22.12+ or 24:
+
+```sh
+npm run setup
+npm run dev
+```
+
+Open the local URL printed by Vite (normally `http://localhost:5173`). Root commands delegate to `frontend/`; `npm run setup` installs its locked dependencies. You can also run `npm ci` and `npm run dev` inside `frontend/`. Root `npm test`, `npm run typecheck`, `npm run build`, and `npm run test:e2e` delegate there too.
+
+The `.replit` file configures a Node 22 development preview on `0.0.0.0:5173`, including both live-source endpoints. Import this branch into the team's Replit project and use Run, then record the actual project link and redacted proof. Configuration and local checks do **not** establish actual Replit use, a production deployment, or competition compliance. See [Replit configuration documentation](https://docs.replit.com/features/project-setup/configuration).
 This is a synthetic, session-only MVP for team review. It is not a validated career assessment, Malaysian labor forecast, approved team product decision, or completed competition submission. Replit usage/proof and formal tools declarations remain outstanding.
 
 ## Team responsibilities to confirm

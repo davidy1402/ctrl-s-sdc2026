@@ -37,3 +37,14 @@ All six exact URLs supplied in Rania’s message returned HTTP 405 to the retrie
 - [Reverse engineering and exploit development](https://elatih.hrdcorp.gov.my/courses-details/reverse-engineering-and-exploit-development)
 
 The current repository has a four-question, three-signal matrix. The supplied message’s six dimensions, two named onboarding paths, and “NaviGate-SDG” architecture do not describe this branch. David instructed us to add useful requirements while preserving the original evidence and scoring constraints. A headline-based disruption index and probabilistic prediction claim would require a validated methodology; neither is represented as established evidence here.
+
+
+## Follow-up: official news and Replit configuration
+
+Checked on 22 October 2026. Actual Node retrieval of [UN News economic development RSS](https://news.un.org/feed/subscribe/en/news/topic/economic-development/feed/rss.xml) and [MOSTI RSS](https://www.mosti.gov.my/en/feed/) succeeded, with three global AI titles and one Malaysian STEM title after the documented filters. Global fetch time: `2026-10-22T15:37:09.816Z`; Malaysian fetch time: `2026-10-22T15:37:10.942Z`. A second request reused each successful original timestamp. These counts describe this retrieval only, not market activity. Dates in the feeds can be older than the retrieval date.
+
+The Malaysian feed contains science/technology announcements, not measured labour demand. The [TalentCorp study launch](https://www.talentcorp.com.my/resources/press-releases/talentcorp-launches-landmark-study-on-workforce-impact-of-ai-digitalisation-and-green-economy/) was also opened as a primary Malaysian workforce source, dated 18 November 2024. No statistics from that study are added to scoring.
+
+Google News RSS responded successfully but its copyright notice limits use to personal, noncommercial feed readers, so it was excluded. HRD Corp RSS returned 403; TalentCorp `/feed/` returned 404; MYFutureJobs RSS returned unrelated skills taxonomy entries from 2025 and was unsuitable for current AI news. No working or current source claim is made for those alternatives.
+
+Replit configuration follows its [official configuration reference](https://docs.replit.com/features/project-setup/configuration), checked on 22 October 2026. This supports the file format and local startup arrangement; it is not evidence that the team has run the project on Replit. RunPod/sponsor-rule clarification, actual platform use/proof, team review and formal disclosures remain outstanding.

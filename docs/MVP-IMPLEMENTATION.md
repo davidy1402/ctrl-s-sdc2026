@@ -29,3 +29,23 @@ The local dependency tree initially failed reads with `ETIMEDOUT`; reinstalling 
 This is a demonstrated synthetic MVP, not evidence of an effective career intervention or competition submission readiness. Team review of product direction and rubric weights, human contribution review, actual Replit usage/proof, sponsor/API and RunPod scope clarification, target-user accessibility testing, and formal tool declarations remain outstanding. No production deployment was performed for this task.
 
 The e-LATiH URLs proposed in Rania’s message returned HTTP 405 during verification; content, price, availability, and prerequisites remain unconfirmed. They are recorded as pending, rather than presented as verified courses. David asked to incorporate useful requirements while preserving the original evidence and scoring constraints: this branch adds a three-phase timeline and stronger live-source metadata, without replacing the app with the different six-dimension/Python architecture described in that message.
+
+## Follow-up review — 23 October 2026 MYT
+
+Branch: `codex/live-news-replit`, based on the merged working-branch commit `168ea86`. David authorised useful additions from the teammate's proposal while retaining the existing evidence and scoring boundaries.
+
+- Requirement 2 is strengthened with live official RSS context: UN News for global AI headlines and MOSTI for Malaysian science/skills announcements. These are explicitly scoped news samples, not hiring statistics or an AI labour index. Both expose source links, individual publication dates, original retrieval timestamps, 30-minute per-source caches, empty states and offline states. The existing U.S. BLS integration remains separate.
+- Requirements 1 and 3–6 retain their implemented synthetic-MVP status. The three-signal assessment, explainable role scores, skill reports, three-phase pathways, SDG rationales and deterministic scenarios remain unchanged. A news-source change does not change assessed capability or fit scores.
+- Root npm commands now delegate to `frontend/`, resolving the root-directory ENOENT problem. `.replit` supplies a Node 22 development Run command and port mapping, including the source endpoints. This is configuration, not evidence of actual Replit use or production deployment.
+
+Verification for this follow-up:
+
+- `npm test`: 17 unit/interface tests passed. New checks cover RSS parsing/filtering, publication dates, publisher and payload validation, entity/size rejection, per-source cache expiry, original stale timestamps, failure cooldown, simultaneous request reuse, and actual local HTTP method/scope/error handling.
+- `npm run typecheck` and `npm run build`: passed.
+- `npm run test:e2e`: 9 Chromium tests passed across mobile (390px), tablet (768px) and desktop (1280px). The continuous synthetic journey now also checks news scope switching, empty results, stale dates and score independence; an initial outage displays no invented headlines. Browser news responses are synthetic fixtures, not proof of upstream availability.
+- Separate real upstream and local HTTP checks on 22 October 2026 UTC succeeded. Root `npm run dev -- --port 4174 --strictPort` launched Vite. Both news scopes returned HTTP 200; subsequent requests returned `cached` with unchanged retrieval timestamps. Invalid scope returned 400, POST 405. HTTP cache policy was `no-store`. Global retrieval: `2026-10-22T15:40:36.879Z`; Malaysian retrieval: `2026-10-22T15:40:37.567Z`.
+- The new mobile news panel screenshot was visually inspected; checked layouts had no horizontal overflow. Initial dependency reads stalled; reinstalling the locked tree restored checks. Local port binding required execution outside the filesystem/network sandbox.
+
+Remaining limits: keyword filters are deliberately narrow and can miss relevant news; sources may contain old items or be unavailable; caches are process-local and lost on cold starts. News does not predict employment or establish market demand. Google News RSS was excluded after its response disclosed a personal/noncommercial reader restriction. The six-dimension replacement assessment, Python/Pandas duplication, unsupported disruption index and placeholder RunPod worker were not added. e-LATiH links remain unverified, with existing verified free learning alternatives retained. Actual Replit use/proof, RunPod and sponsor-rule clarification, deployment, team review, model validation and formal disclosures remain outstanding.
+
+AI assistance: this follow-up was implemented with OpenAI Codex. No runtime model, real CVs or personal assessment data were introduced. The team still needs to review and understand the contribution and record actual tool use in its declaration.
