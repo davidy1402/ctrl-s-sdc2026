@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-10-23T02:14:29.735Z",
+  "note": "Actual local production preview of final build, real upstreams, no intercepted endpoints. Not public hosting or Replit proof.",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "body": {
+        "html": true
+      }
+    },
+    {
+      "path": "/api/trends",
+      "status": 200,
+      "body": {
+        "schemaVersion": 1,
+        "growthPercent": 35,
+        "source": "U.S. Bureau of Labor Statistics — Data Scientists",
+        "url": "https://www.bls.gov/ooh/math/data-scientists.htm",
+        "published": "August 27, 2026",
+        "checked": "2026-10-23",
+        "period": "2025–2035",
+        "geography": "United States",
+        "occupation": "Data Scientists",
+        "limitation": "Related occupation proxy for Data Analyst; not Malaysian demand, an individual forecast, or a guarantee.",
+        "license": "U.S. federal government public information; attribution retained.",
+        "retrievedAt": "2026-10-23T02:14:29.196Z",
+        "cacheStatus": "fresh"
+      }
+    },
+    {
+      "path": "/api/news?scope=global",
+      "status": 200,
+      "body": {
+        "scope": "global",
+        "source": "UN News · global AI context",
+        "feedUrl": "https://news.un.org/feed/subscribe/en/news/topic/economic-development/feed/rss.xml",
+        "retrievedAt": "2026-10-23T02:14:29.127Z",
+        "cacheStatus": "fresh",
+        "items": [
+          {
+            "title": "AI, green energy and economic transitions risk leaving vulnerable communities behind, UN warns",
+            "url": "https://news.un.org/feed/view/en/story/2026/10/1168604",
+            "publishedAt": "2026-10-15T12:00:00.000Z"
+          },
+          {
+            "title": "Countries must increase AI regulation to avoid ‘existential risks’: Türk",
+            "url": "https://news.un.org/feed/view/en/story/2026/09/1168326",
+            "publishedAt": "2026-09-14T12:00:00.000Z"
+          },
+          {
+            "title": "AI datacentres pose growing threat to electricity systems worldwide",
+            "url": "https://news.un.org/feed/view/en/story/2026/09/1168296",
+            "publishedAt": "2026-09-08T12:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/api/news?scope=malaysia",
+      "status": 200,
+      "body": {
+        "scope": "malaysia",
+        "source": "MOSTI · Malaysia science & skills context",
+        "feedUrl": "https://www.mosti.gov.my/en/feed/",
+        "retrievedAt": "2026-10-23T02:14:29.732Z",
+        "cacheStatus": "fresh",
+        "items": [
+          {
+            "title": "Program STEM Camp MOSTI 2026: Eksplorasi Asas Mikropengawal Dalam Dunia Robotik Dan Inovasi Melalui STEM Dalam Kalangan Murid Orang Asli",
+            "url": "https://www.mosti.gov.my/en/berita/program-stem-camp-mosti-2026-eksplorasi-asas-mikropengawal-dalam-dunia-robotik-dan-inovasi-melalui-stem-dalam-kalangan-murid-orang-asli/",
+            "publishedAt": "2026-10-22T03:32:20.000Z"
+          }
+        ]
+      }
+    }
+  ]
+}

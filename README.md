@@ -4,6 +4,8 @@ Domain 1: Aiversecity Future-Ready Workforce.
 
 Build an AI app that helps people understand how AI may change their jobs, find suitable future careers, and plan which skills to learn next.
 
+The application source entry is **`frontend/`**. To review this revision, select **`codex/trend-evidence-submission`**, based on working branch `codex/mobile-web-app-polish` (PRs #4 and #5 merged there). The [review PR #6](https://github.com/davidy1402/ctrl-s-sdc2026/pull/6) targets `main` and remains a draft pending review and release decisions. Repository access and submission links are tracked separately in the [readiness checklist](submission/STATUS-CHECKLIST.md).
+
 ## Start here
 
 - [Team hub](https://docs.google.com/document/d/1ASOWPZ-TJerlxiS-XfcJrthEzJZrEQT9YvjadSpBKIY/edit?usp=drivesdk) — shared entry, roles, folders and milestones.
@@ -16,7 +18,22 @@ Use the existing WhatsApp group for reminders and quick discussion. Keep accepte
 
 ## Current state
 
-This initial commit sets up team documentation and collaboration. There is no runnable app, selected stack, verified data pipeline or deployed prototype yet. The primary user and feature scope remain for the team to decide. The wireframe AI has reported a draft, but the actual visual artifact has not been added to this repository.
+The Figma-integrated UI lives in `frontend/`. The synthetic MVP supports assessment → three explainable career matches → role-specific pathways → scenario comparison, with proposed SDG mappings for every supported role and skill. A dated U.S. BLS related-occupation proxy now feeds exploration order and practice priority, with unchanged capability scores and explicit missing/stale states. Optional official global AI/Malaysian science-and-skills news remains contextual reading. See the [trend method](docs/TREND-METHODOLOGY.md). See [run instructions, sources and limitations](frontend/README.md) and [implementation review](docs/MVP-IMPLEMENTATION.md).
+
+### Run locally from the repository root
+
+Use Node 22.12+ or 24:
+
+```sh
+git switch codex/trend-evidence-submission
+npm run setup
+npm run dev
+```
+
+Open the local URL printed by Vite (normally `http://localhost:5173`). Root commands delegate to `frontend/`; `npm run setup` installs its locked dependencies. You can also run `npm ci` and `npm run dev` inside `frontend/`. Root `npm test`, `npm run typecheck`, `npm run build`, and `npm run test:e2e` delegate there too.
+
+The `.replit` file configures a Node 22 development preview on `0.0.0.0:5173`, including both live-source endpoints. Import this branch into the team's Replit project and use Run, then record the actual project link and redacted proof. Configuration and local checks do **not** establish actual Replit use, a production deployment, or competition compliance. See [Replit configuration documentation](https://docs.replit.com/features/project-setup/configuration).
+This is a synthetic, session-only MVP for team review. It is not a validated career assessment, Malaysian labor forecast, approved team product decision, or completed competition submission. Actual Replit use/proof and signed final declarations remain outstanding; concrete review artifacts are indexed in [submission/](submission/README.md).
 
 ## Team responsibilities to confirm
 
@@ -48,14 +65,14 @@ Skills profile → updatable AI/job signals → explainable role matching and sk
 
 ## Preliminary submission
 
-- Official proposal PDF.
+- Official proposal PDF (reviewable exports and readiness index in [submission/](submission/README.md)).
 - Pitch slides.
 - Accessible functional prototype/build.
 - Technical and tools declaration PDF.
 - Public GitHub source with Apache 2.0 license and run instructions.
 - A 5–7 minute YouTube pitch/demo.
 
-This repo stays private during preparation. Review content before switching it public for submission. Replit use is required. Confirm the exact API Premium sponsor requirement and the scope of mandatory RunPod use. No sponsor integration has been completed yet.
+This repo stays private during preparation. Review content before switching it public for submission. Replit use is required. The inspected portal also explicitly requires an API Premium sponsor integration, but does not identify the service or access instructions. That is an unresolved submission blocker. RunPod is required for GPU work under Participant §9.4; the sample README wording still needs clarification. No sponsor integration or actual platform-use proof is claimed. See the [unsent official questions](docs/submission/OFFICIAL-CLARIFICATION-DRAFT.md).
 
 Internal submission target: **24 October 2026, 22:00 MYT**. Official sources conflict between **25 October, 07:59:59 AM** and **25 October, 11:59 PM MYT**. Obtain a written clarification; plan against the earlier deadline meanwhile. Stop modifying submitted code at the applicable deadline until organisers permit further development.
 
