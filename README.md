@@ -4,7 +4,7 @@ Domain 1: Aiversecity Future-Ready Workforce.
 
 Build an AI app that helps people understand how AI may change their jobs, find suitable future careers, and plan which skills to learn next.
 
-The application source entry is **`frontend/`**. To review this revision, select **`codex/trend-evidence-submission`**, based on working branch `codex/mobile-web-app-polish` (PRs #4 and #5 merged there). Repository access, the final default-branch release and submission links are tracked separately in the [readiness checklist](submission/STATUS-CHECKLIST.md).
+The application source entry is **`frontend/`**. To review this revision, select **`codex/trend-evidence-submission`**, based on working branch `codex/mobile-web-app-polish` (PRs #4 and #5 merged there). The [review PR #6](https://github.com/davidy1402/ctrl-s-sdc2026/pull/6) targets `main` and remains a draft pending review and release decisions. Repository access and submission links are tracked separately in the [readiness checklist](submission/STATUS-CHECKLIST.md).
 
 ## Start here
 
