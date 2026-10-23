@@ -1,4 +1,6 @@
 import { assess } from "./scoring"
+import type { Trend } from "./trends"
+import { decideTrend } from "./trendDecision"
 
 export type ScenarioId = "assistive" | "accelerated"
 
@@ -349,6 +351,8 @@ export type RoleMatch = {
   existingSkills: SkillDefinition[]
   missingSkills: SkillDefinition[]
   confidence: string
+  trendPriority: number
+  trendExplanation: string
 }
 type RankingResult = {
   kind: "incomplete" | "complete"
@@ -359,9 +363,11 @@ export function rankCareers(
   answers: readonly number[],
   selectedSkills: readonly string[],
   scenario: ScenarioId,
+  trend: Trend | null = null,
 ): RankingResult {
   const result = assess(answers)
   if (result.kind === "incomplete") return { kind: "incomplete", rankings: [] }
+  const decision = decideTrend(trend)
   const scenarioFactors =
     scenario === "accelerated" ? [0.75, 1.15, 1.3] : [1, 1, 1]
   const rankings = careerDefinitions
@@ -385,6 +391,8 @@ export function rankCareers(
       )
       return {
         role,
+        trendPriority: role.id === "data" ? decision.priority : 0,
+        trendExplanation: role.id === "data" ? decision.explanation : "No mapped current trend evidence for this role. Direction unknown; capability evidence remains available. No rise or decline inferred from another occupation’s projection.",
         score:
           Math.round(
             breakdown.reduce((sum, item) => sum + item.contribution, 0) * 10,
@@ -398,6 +406,7 @@ export function rankCareers(
     })
     .sort(
       (left, right) =>
+        right.trendPriority - left.trendPriority ||
         right.score - left.score ||
         left.role.title.localeCompare(right.role.title),
     )
@@ -408,6 +417,7 @@ export function buildPathway(
   roleId: CareerDefinition["id"],
   selectedSkills: readonly string[],
   scenario: ScenarioId,
+  trend: Trend | null = null,
 ) {
   const role =
     careerDefinitions.find((candidate) => candidate.id === roleId) ??
@@ -415,6 +425,7 @@ export function buildPathway(
   const remaining = [...role.skills]
   const ordered: SkillDefinition[] = []
   const scenarioFirst = scenario === "accelerated"
+  const prioritySkills = role.id === "data" ? decideTrend(trend).prioritizedSkills : []
   while (remaining.length) {
     const ready = remaining.filter((skill) =>
       skill.prerequisites.every((id) =>
@@ -432,6 +443,7 @@ export function buildPathway(
         Number(right.prerequisites.length > 0)
       return (
         phaseDelta ||
+        Number(prioritySkills.includes(right.id)) - Number(prioritySkills.includes(left.id)) ||
         scenarioDelta ||
         Number(selectedSkills.includes(left.id)) -
           Number(selectedSkills.includes(right.id)) ||
@@ -449,11 +461,12 @@ export function buildRoadmap(
   roleId: CareerDefinition["id"],
   selectedSkills: readonly string[],
   scenario: ScenarioId,
+  trend: Trend | null = null,
 ) {
   const role =
     careerDefinitions.find((candidate) => candidate.id === roleId) ??
     careerDefinitions[0]
-  const steps = buildPathway(role.id, selectedSkills, scenario)
+  const steps = buildPathway(role.id, selectedSkills, scenario, trend)
   return [
     {
       name: "Foundation",

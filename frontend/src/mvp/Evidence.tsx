@@ -8,6 +8,7 @@ import {
   type CareerDefinition,
 } from "./domain1"
 import type { Trend } from "./trends"
+import { decideTrend } from "./trendDecision"
 
 export function Evidence({ answers }: { answers: number[] }) {
   const result = assess(answers)
@@ -84,13 +85,15 @@ export function RoleMatches({
   selectedSkills,
   scenario,
   onSelect,
+  trend,
 }: {
   answers: number[]
+  trend: Trend | null
   selectedSkills: string[]
   scenario: ScenarioId
   onSelect: (roleId: CareerDefinition["id"]) => void
 }) {
-  const result = rankCareers(answers, selectedSkills, scenario)
+  const result = rankCareers(answers, selectedSkills, scenario, trend)
   if (result.kind === "incomplete")
     return (
       <section className="mvp-panel">
@@ -111,18 +114,15 @@ export function RoleMatches({
           forecasts.
         </p>
       </div>
-      {result.rankings.map((item) => (
+      <p className="role-match-method">Exploration order uses the dated U.S. proxy first, then your capability alignment. Scores retain their original meaning. News headlines do not affect the rule. Missing evidence means unknown, not falling demand.</p>
+      {result.rankings.map((item, index) => (
         <article
           className={`role-match-card ${item.role.id}`}
           key={item.role.id}
         >
           <div className="role-match-top">
             <span className="role-match-rank">
-              {String(
-                result.rankings.findIndex(
-                  (other) => other.score === item.score,
-                ) + 1,
-              ).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")}
             </span>
             <div>
               <h3>{item.role.title}</h3>
@@ -133,6 +133,8 @@ export function RoleMatches({
               <small>/100</small>
             </strong>
           </div>
+          <p className="trend-decision">{item.trendExplanation}</p>
+          {item.role.id === "data" && trend && <a className="role-source-note" href={trend.url} target="_blank" rel="noreferrer">Review trend evidence · {trend.published} · {trend.period}</a>}
           <details className="role-match-details">
             <summary>Why this score · evidence and skills</summary>
             <p className="role-match-confidence">{item.confidence}</p>
@@ -206,7 +208,7 @@ export function RoleMatches({
             : "More task steps are automated"}
         </strong>
         . The scenario changes dimension weights and learning priorities. Role
-        ordering may stay the same; equal scores share a rank. The underlying
+        ordering may stay the same. Numbers show exploration order, not capability rank; equal capability scores remain equal. The underlying
         answer matrix stays fixed.
       </p>
     </section>
@@ -241,7 +243,7 @@ export function TrendPanel({
             </a>
           </p>
           <p>
-            {trend.growthPercent}% projected employment growth · {trend.period}{" "}
+            {trend.growthPercent}% projected employment change · {trend.period}{" "}
             · geography: {trend.geography}
           </p>
           <p>
@@ -253,10 +255,9 @@ export function TrendPanel({
               : "Dated reviewed snapshot; no live retrieval claimed."}
           </p>
           <p>
-            {trend.limitation} This series is background context for the Data
-            Analyst exploration and does not supply employment probabilities or
-            change the other roles’ scores.
+            {trend.limitation} Capability scores stay unchanged. Direction for the other roles remains unknown.
           </p>
+          <p className="trend-decision">{decideTrend(trend).explanation}</p>
           <small>
             Live retrievals are cached for 30 minutes. {trend.license}
           </small>

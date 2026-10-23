@@ -51,6 +51,7 @@ test("synthetic assessment → career matches → role pathway → scenarios and
       }),
     })
   })
+  await page.route("**/data/trend.json", route => route.fulfill({status:503,body:"Unavailable test snapshot"}))
   await page.goto("/")
   await page.getByRole("button", { name: "Begin your journey" }).click()
   await page.getByRole("button", { name: /Student Exploring/ }).click()
@@ -174,7 +175,7 @@ test("synthetic assessment → career matches → role pathway → scenarios and
     page.getByRole("status").filter({ hasText: "Live refresh unavailable" }),
   ).toBeVisible()
   await expect(
-    page.getByText("Dated reviewed snapshot; no live retrieval claimed."),
+    page.getByText("Trend evidence unavailable; no demand conclusion can be made."),
   ).toBeVisible()
   const software = page.locator(".role-match-card").filter({
     has: page.getByRole("heading", {

@@ -4,9 +4,13 @@ import {
   type ScenarioId,
   type CareerDefinition,
 } from "./domain1"
+import type { Trend } from "./trends"
+import { decideTrend } from "./trendDecision"
 import type {ReactNode} from 'react'
 
 type Props = {
+  trend: Trend | null
+  trendControl: ReactNode
   roleId: CareerDefinition["id"]
   scenario: ScenarioId
   selected: string[]
@@ -17,6 +21,8 @@ type Props = {
 }
 export function Pathway({
   roleId,
+  trend,
+  trendControl,
   scenario,
   selected,
   completed,
@@ -26,7 +32,7 @@ export function Pathway({
 }: Props) {
   const role =
     careerDefinitions.find((item) => item.id === roleId) ?? careerDefinitions[0]
-  const phases = buildRoadmap(role.id, selected, scenario)
+  const phases = buildRoadmap(role.id, selected, scenario, trend)
   const steps = phases.flatMap((phase) => phase.steps)
   const done = steps.filter((step) => completed.includes(step.id)).length
   const next = steps.find((step) => !completed.includes(step.id))
@@ -54,6 +60,8 @@ export function Pathway({
         </p>
       </header>
       {scenarioControl}
+      <section className="mvp-panel"><h2>Evidence and learning priority</h2><p className="trend-decision">{role.id === "data" ? decideTrend(trend).explanation : "No current mapped trend evidence for this role. No direction inferred; scenario and prerequisite priorities apply."}</p></section>
+      <details className="pathway-notes"><summary>Sources &amp; uncertainty</summary>{trendControl}</details>
       <details className="pathway-notes profile-editor">
         <summary>Update skills you have tried</summary>
         <p>

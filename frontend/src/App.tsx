@@ -1,5 +1,5 @@
 import { Pathway } from "./mvp/Pathway"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { assess } from "./mvp/scoring"
 import { adoptionScenarios, careerDefinitions, findSkill, rankCareers, type ScenarioId } from "./mvp/domain1"
 import { parseTrend, type Trend } from "./mvp/trends"
@@ -909,28 +909,34 @@ export default function App() {
   const [impactReturn, setImpactReturn] = useState<Screen>("dashboard")
   const [trend, setTrend] = useState<Trend | null>(null)
   const [trendStatus, setTrendStatus] = useState("Loading reviewed source snapshot…")
+  const trendRequestVersion = useRef(0)
   const refreshTrend = async () => {
+    const version = ++trendRequestVersion.current
     setTrendStatus("Refreshing public BLS source…")
     try {
       const response = await fetch("/api/trends", {cache:"no-store"})
       if (!response.ok) throw new Error("Unavailable")
       const record=parseTrend(await response.json())
+      if (version !== trendRequestVersion.current) return
       setTrend(record)
       setTrendStatus(record.cacheStatus==='stale' ? 'Live refresh failed. Showing the last successful retrieval with its original timestamp.' : 'BLS source record received. A 30-minute cache may apply; the retrieval timestamp is shown below.')
     } catch {
+      if (version !== trendRequestVersion.current) return
+      setTrend(previous => previous ? {...previous, cacheStatus: "stale"} : null)
       setTrendStatus("Live refresh unavailable. Keeping the dated snapshot or last successful source; no update claimed.")
     }
   }
   useEffect(() => {
     let active = true
+    const version = trendRequestVersion.current
     fetch("/data/trend.json", {cache:"no-store"}).then(r => {if(!r.ok) throw new Error(); return r.json()}).then(parseTrend).then(value => {
-      if(active) {setTrend(value); setTrendStatus("Reviewed snapshot — use Refresh for a live source check.")}
-    }).catch(() => {if(active) setTrendStatus("Source unavailable. Recommendation has insufficient trend evidence.")})
+      if(active && version === trendRequestVersion.current) {setTrend(value); setTrendStatus("Reviewed snapshot — use Refresh for a live source check.")}
+    }).catch(() => {if(active && version === trendRequestVersion.current) setTrendStatus("Source unavailable. Recommendation has insufficient trend evidence.")})
     return () => {active=false}
   }, [])
   const assessment = assess(answers)
   const supported = assessment.kind === "complete"
-  const careerRankings = rankCareers(answers, intakeSkills, impactScenario)
+  const careerRankings = rankCareers(answers, intakeSkills, impactScenario, trend)
   const selectedRanking = careerRankings.kind === "complete"
     ? careerRankings.rankings.find((item) => item.role.id === selectedCareer)
     : undefined
@@ -1515,7 +1521,7 @@ export default function App() {
             <p>Compare three role-specific explanations. These are exploration scores from a small editorial rubric, not employment probabilities.</p>
           </div>
           <ScenarioSelector scenario={impactScenario} onChange={setImpactScenario} />
-          <RoleMatches answers={answers} selectedSkills={intakeSkills} scenario={impactScenario} onSelect={(roleId) => openCareer(roleId)} />
+          <RoleMatches trend={trend} answers={answers} selectedSkills={intakeSkills} scenario={impactScenario} onSelect={(roleId) => openCareer(roleId)} />
           <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} />
           <SdgMapping />
           <div className="why-panel">
@@ -1848,7 +1854,7 @@ export default function App() {
         <section className="main-screen pathway-screen">
           <AppHeader title="My pathway" logoState={dashboardLogoState} />
           <button className="pathway-role-change" type="button" onClick={()=>go('recommendations')}>Change career</button>
-          <Pathway scenarioControl={<ScenarioSelector scenario={impactScenario} onChange={setImpactScenario} />} roleId={activeRole.id} scenario={impactScenario} selected={intakeSkills} onProfileChange={setIntakeSkills} completed={activePathProgress} onToggle={(id) => {
+          <Pathway trend={trend} trendControl={<TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} />} scenarioControl={<ScenarioSelector scenario={impactScenario} onChange={setImpactScenario} />} roleId={activeRole.id} scenario={impactScenario} selected={intakeSkills} onProfileChange={setIntakeSkills} completed={activePathProgress} onToggle={(id) => {
             const complete = activePathProgress.includes(id)
             setPathwayProgress(current => ({...current, [selectedCareer]:complete ? activePathProgress.filter(item => item !== id) : [...activePathProgress,id]}))
             announce(complete ? "Step marked incomplete" : "Step complete. Keep going at your own pace.")
@@ -1879,7 +1885,7 @@ export default function App() {
             <p>{adoptionScenarios.find((scenario) => scenario.id === impactScenario)?.limitation}</p>
             <p>In the accelerated scenario, the same assessment signals are reweighted toward evidence checking and collaborative explanation. The pathway moves verification and communication skills earlier when their prerequisites are ready. These are transparent product rules, not claims that any task or occupation will be automated.</p>
           </section>
-          <RoleMatches answers={answers} selectedSkills={intakeSkills} scenario={impactScenario} onSelect={(roleId) => openCareer(roleId)} />
+          <RoleMatches trend={trend} answers={answers} selectedSkills={intakeSkills} scenario={impactScenario} onSelect={(roleId) => openCareer(roleId)} />
           <TrendPanel trend={trend} status={trendStatus} refresh={refreshTrend} />
           <SdgMapping />
         </section>

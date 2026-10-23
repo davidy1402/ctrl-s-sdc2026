@@ -622,3 +622,7 @@ h1, h2, h3 { text-wrap: balance; letter-spacing: -.035em; }
 .news-headlines small { display: block; margin-top: .5rem; color: #b8cad2; }
 .news-context a { overflow-wrap: anywhere; }
 .news-controls select:focus-visible { outline: 2px solid #c6ff4a; outline-offset: 3px; }
+
+/* Keep the evidence-to-decision explanation readable on narrow screens. */
+.trend-decision { margin:14px 0; padding:12px 14px; border-left:2px solid var(--lime); background:rgba(184,246,72,.035); color:#c4ced8; font-size:13px; line-height:1.65; overflow-wrap:anywhere; }
+a.role-source-note { display:inline-block; color:var(--lime); text-decoration:underline; }

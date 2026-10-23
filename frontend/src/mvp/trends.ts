@@ -91,7 +91,7 @@ export function parseBls(html: string, retrievedAt = new Date()): Trend {
     .replace(/&nbsp;|&#160;/g, " ")
     .replace(/\s+/g, " ")
   const match = text.match(
-    /Employment of data scientists is projected to grow (\d+(?:\.\d+)?) percent from (\d{4}) to (\d{4})/i,
+    /Employment of data scientists is projected to (grow|decline)(?: by)? (\d+(?:\.\d+)?) percent from (\d{4}) to (\d{4})/i,
   )
   const modified = text.match(
     /Last Modified Date:\s*([A-Za-z]+ \d{1,2}, \d{4})/i,
@@ -105,8 +105,8 @@ export function parseBls(html: string, retrievedAt = new Date()): Trend {
     published: modified[1],
     checked: retrievedAt.toISOString().slice(0, 10),
     retrievedAt: retrievedAt.toISOString(),
-    period: `${match[2]}–${match[3]}`,
-    growthPercent: Number(match[1]),
+    period: `${match[3]}–${match[4]}`,
+    growthPercent: Number(match[2]) * (match[1].toLowerCase() === "decline" ? -1 : 1),
     geography: "United States",
     occupation: "Data Scientists",
     limitation:
