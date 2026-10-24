@@ -8,7 +8,7 @@ A web app that helps students explore three career pathways and decide what to p
 | --- | --- |
 | Team Name | Ctrl+S |
 | Team Domain | Domain 1 - Aiversecity Future-Ready Workforce |
-| SDG Track (1-17) | SDG 8 - Decent Work and Economic Growth; SDG 4 is a supporting goal |
+| SDG Track (1-17) | SDG 8 - Decent Work and Economic Growth. SDG 4 is a supporting goal. |
 | Team Leader | Yong Jia Wei |
 | University | Xiamen University Malaysia |
 | Number of Members | 5 |
@@ -88,7 +88,7 @@ The running app uses deterministic scoring rules and does not call an AI model. 
 └── README.md
 ```
 
-This is a TypeScript project. Source and tests stay under `frontend/`; there is no Python dependency file or RunPod handler.
+This is a TypeScript project. Source and tests stay under `frontend/`. There is no Python dependency file or RunPod handler.
 
 ### Architecture
 
