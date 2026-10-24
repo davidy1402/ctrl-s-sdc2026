@@ -24,10 +24,10 @@ The assessment uses clear scoring rules in the browser. It is for career explora
 | --- | --- |
 | Live prototype | [Open Aiversecity](https://ctrls-aiversecity.replit.app) |
 | Product demo | [Watch on YouTube](https://youtu.be/D1d8F0OJGY8) |
-| Pitch deck | [PDF](submission/SDC2026_CtrlS_PitchDeck.pdf) |
-| Preliminary proposal | [PDF](submission/SDC2026_CtrlS_Preliminary.pdf) |
-| Technical and tools declaration | [PDF](submission/SDC2026_CtrlS_TechDeclaration.pdf) |
-| Replit proof of use | [PDF](submission/SDC2026_CtrlS_Replit_POU.pdf) |
+| Pitch deck | [PDF](submission/SDC2026_Ctrl+S_PitchDeck.pdf) |
+| Preliminary proposal | [PDF](submission/SDC2026_Ctrl+S_Preliminary.pdf) |
+| Technical and tools declaration | [PDF](submission/SDC2026_Ctrl+S_TechDeclaration.pdf) |
+| Replit proof of use | [PDF](submission/SDC2026_Ctrl+S_Replit_POU.pdf) |
 
 ## What It Does
 
@@ -93,7 +93,7 @@ LICENSE       Apache License 2.0
 - Tee Sou See
 - Akhrorov Muhammadsodik
 
-AI-assisted development tools used by the team are declared in the [Technical and Tools Declaration](submission/SDC2026_CtrlS_TechDeclaration.pdf).
+AI-assisted development tools used by the team are declared in the [Technical and Tools Declaration](submission/SDC2026_Ctrl+S_TechDeclaration.pdf).
 
 ## License
 
