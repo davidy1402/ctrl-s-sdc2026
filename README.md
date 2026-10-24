@@ -1,92 +1,196 @@
-# Ctrl+S · SDC Hackathon 2026
+# Aiversecity
 
-Domain 1: Aiversecity Future-Ready Workforce.
+A web app that helps students explore three career pathways and decide what to practise next.
 
-Build an AI app that helps people understand how AI may change their jobs, find suitable future careers, and plan which skills to learn next.
+## Team Information
 
-The application source entry is **`frontend/`**. To review this revision, select **`codex/trend-evidence-submission`**, based on working branch `codex/mobile-web-app-polish` (PRs #4 and #5 merged there). The [review PR #6](https://github.com/davidy1402/ctrl-s-sdc2026/pull/6) targets `main` and remains a draft pending review and release decisions. Repository access and submission links are tracked separately in the [readiness checklist](submission/STATUS-CHECKLIST.md).
+| Field | Details |
+| --- | --- |
+| Team Name | Ctrl+S |
+| Team Domain | Domain 1 - Aiversecity Future-Ready Workforce |
+| SDG Track (1-17) | SDG 8 - Decent Work and Economic Growth; SDG 4 is a supporting goal |
+| Team Leader | Yong Jia Wei |
+| University | Xiamen University Malaysia |
+| Number of Members | 5 |
 
-## Start here
+## Links
 
-- [Team hub](https://docs.google.com/document/d/1ASOWPZ-TJerlxiS-XfcJrthEzJZrEQT9YvjadSpBKIY/edit?usp=drivesdk) — shared entry, roles, folders and milestones.
-- [Team tracker](https://docs.google.com/spreadsheets/d/1rON7N3G5cFCVUlUERtMlPEnpCi1E67DqsZ_iaFy28o8/edit?usp=drivesdk) — current task owners, dates, status, sources, questions and tools.
-- [Kickoff agenda and notes](https://docs.google.com/document/d/1Nlud9VfC0v6MKqeEHp_lqtMenuyD2XvO56Uu7c0SeV8/edit?usp=drivesdk).
-- [Team Drive folder](https://drive.google.com/drive/folders/1Ek1sRHeDVOYtUSiUGsDoHE9vUqaiofWZ).
-- [Official competition materials](https://drive.google.com/drive/folders/1xw7c2aN8N-at8hPEULzkcU76e_FFb0Ef).
+| Resource | Link |
+| --- | --- |
+| GitHub Repository | [davidy1402/ctrl-s-sdc2026](https://github.com/davidy1402/ctrl-s-sdc2026) |
+| Live Demo / Replit Deployment | [Open Aiversecity](https://ctrls-aiversecity.replit.app) |
+| RunPod Endpoint | Not applicable. This prototype has no GPU workload. |
+| Slide Deck | [Pitch deck PDF](submission/SDC2026_CtrlS_PitchDeck.pdf) |
+| Demo Video | [YouTube pitch and product demo](https://youtu.be/D1d8F0OJGY8) |
+| Preliminary Proposal | [Proposal PDF](submission/SDC2026_CtrlS_Preliminary.pdf) |
+| Technical & Tools Declaration | [Declaration PDF](submission/SDC2026_CtrlS_TechDeclaration.pdf) |
+| Replit Proof of Use | [Workspace and usage screenshots](submission/SDC2026_CtrlS_Replit_POU.pdf) |
 
-Use the existing WhatsApp group for reminders and quick discussion. Keep accepted decisions in meeting notes and task status in the tracker.
+The PDFs and links are indexed in [the submission folder](submission/README.md).
 
-## Current state
+## Overview
 
-The Figma-integrated UI lives in `frontend/`. The synthetic MVP supports assessment → three explainable career matches → role-specific pathways → scenario comparison, with proposed SDG mappings for every supported role and skill. A dated U.S. BLS related-occupation proxy now feeds exploration order and practice priority, with unchanged capability scores and explicit missing/stale states. Optional official global AI/Malaysian science-and-skills news remains contextual reading. See the [trend method](docs/TREND-METHODOLOGY.md). See [run instructions, sources and limitations](frontend/README.md) and [implementation review](docs/MVP-IMPLEMENTATION.md).
+### Problem
 
-### Run locally from the repository root
+Students face scattered career advice and conflicting claims about how AI will change work. It can be difficult to connect their strengths with a role or a useful next learning step. Aiversecity gives them a guided place to start.
 
-Use Node 22.12+ or 24:
+### Solution
+
+Users select skills they have tried and answer short workplace scenarios. The app compares their responses with three role profiles: Data Analyst, Software Developer, and Operations Research Analyst. It explains the matches and provides a learning pathway for each role.
+
+The running app uses deterministic scoring rules and does not call an AI model. Public occupation information, a dated BLS trend source, and official news feeds provide context. Results support exploration and do not predict employment or verify skills.
+
+### Key Features
+
+- **Skills intake and assessment:** a fictional alias, self-reported skills, and four workplace scenarios.
+- **Explainable matches:** three role profiles with visible reasoning and score contributions.
+- **Learning pathways:** role-specific practice tasks, prerequisites, and public learning resources.
+- **Updatable context:** BLS occupation data and UN News/MOSTI feeds, with dates and availability states.
+- **Scenario comparison:** two hypothetical approaches to AI adoption and their effects on priorities.
+- **SDG connections:** explanations linking roles and skills to relevant targets.
+
+### Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React, TypeScript, Tailwind CSS |
+| Development and build | Vite, Node.js, npm |
+| Server endpoints | TypeScript public-data handlers and fast-xml-parser |
+| Database / authentication | None |
+| Runtime AI / GPU | None. Matching uses rules in the browser. |
+| Hosting / development | Replit |
+| Source control | GitHub |
+| Testing | Node test runner, tsx, Playwright |
+
+## Project Structure
+
+```text
+.
+├── docs/                               # Sources, methodology and technical notes
+├── frontend/
+│   ├── src/
+│   │   ├── main.tsx                    # Application entry point
+│   │   └── mvp/                        # Assessment, matching, pathways and unit tests
+│   ├── api/                            # Public-data HTTP entry points
+│   ├── e2e/                            # Browser tests
+│   ├── public/                         # Static assets and dated data snapshot
+│   └── package-lock.json               # Locked JavaScript dependencies
+├── submission/
+│   ├── SDC2026_CtrlS_Preliminary.pdf
+│   ├── SDC2026_CtrlS_TechDeclaration.pdf
+│   ├── SDC2026_CtrlS_Replit_POU.pdf
+│   ├── SDC2026_CtrlS_PitchDeck.pdf
+│   └── README.md                       # Deliverable index
+├── .gitignore
+├── .replit                             # Replit Run configuration
+├── LICENSE                             # Apache License 2.0
+├── package.json                        # Root setup, run and verification commands
+└── README.md
+```
+
+This is a TypeScript project. Source and tests stay under `frontend/`; there is no Python dependency file or RunPod handler.
+
+### Architecture
+
+```text
+Browser: intake -> assessment rules -> career matches -> learning pathway
+    |
+    +-> Replit-hosted public-data endpoints
+            +-> BLS occupation information
+            +-> UN News RSS
+            +-> MOSTI RSS
+```
+
+Assessment answers remain in browser memory and are not sent to these public sources. Reloading clears the assessment and practice progress.
+
+## How to Run
+
+### Option 1 - Open the Replit Deployment
+
+Open [the live app](https://ctrls-aiversecity.replit.app). No account or API key is needed. Use a fictional name and sample answers.
+
+To run a development copy on Replit, import this repository and click Run. The `.replit` configuration installs locked dependencies and starts Vite on port 5173.
+
+### Option 2 - Run Locally
+
+Use Node.js 22.12 or later:
 
 ```sh
-git switch codex/trend-evidence-submission
+git clone https://github.com/davidy1402/ctrl-s-sdc2026.git
+cd ctrl-s-sdc2026
 npm run setup
 npm run dev
 ```
 
-Open the local URL printed by Vite (normally `http://localhost:5173`). Root commands delegate to `frontend/`; `npm run setup` installs its locked dependencies. You can also run `npm ci` and `npm run dev` inside `frontend/`. Root `npm test`, `npm run typecheck`, `npm run build`, and `npm run test:e2e` delegate there too.
+Open the URL printed by Vite, normally `http://localhost:5173`. No environment variables or paid API credentials are required. Internet access is needed to refresh public sources.
 
-The `.replit` file configures a Node 22 development preview on `0.0.0.0:5173`, including both live-source endpoints. Import this branch into the team's Replit project and use Run, then record the actual project link and redacted proof. Configuration and local checks do **not** establish actual Replit use, a production deployment, or competition compliance. See [Replit configuration documentation](https://docs.replit.com/features/project-setup/configuration).
-This is a synthetic, session-only MVP for team review. It is not a validated career assessment, Malaysian labor forecast, approved team product decision, or completed competition submission. Actual Replit use/proof and signed final declarations remain outstanding; concrete review artifacts are indexed in [submission/](submission/README.md).
+### Run Tests
 
-## Team responsibilities to confirm
+```sh
+npm test
+npm run typecheck
+npm run build
+```
 
-| Member | Suggested focus |
-|---|---|
-| David | Direction, UX/UI, implementation integration and submission |
-| Sodik | Data access and explainable matching as a technical partner |
-| Rania | Proposal, slides and presentation structure |
-| Anes | User problem, evidence, SDG reasoning and pitch |
-| Sushi | Resource verification, testing, official tutorials and platform proof |
+For browser tests:
 
-These are proposals. Confirm ownership, availability and the video editor in the kickoff.
+```sh
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+```
 
-## Working folders
+See [the frontend notes](frontend/README.md) for scoring rules, source details, and limitations. Dated development notes describe the state when written.
 
-| Location | What belongs here |
-|---|---|
-| Google Drive | Editable team drafts, meetings, research, wireframes, pitch/video, final package and proof |
-| docs/ | Technical handoffs and working conventions |
-| submission/ | Reviewed final exports and a deliverable index, when ready |
-| .github/ | Focused technical task and pull-request templates |
-| Root planning notes | Earlier Chinese-language preparation notes for David; Google hub/tracker own current team status |
+## How We Use Replit
 
-Original official text extracts and generated authoring files stay local and are excluded from Git.
+We imported the project into Replit, used it to run and work on the app, and deployed the public prototype there. [Proof of use](submission/SDC2026_CtrlS_Replit_POU.pdf) contains the workspace and account usage screenshots. The deployed app is linked above. No runtime GenAI API was used.
 
-## Required product chain
+## How We Use RunPod
 
-Skills profile → updatable AI/job signals → explainable role matching and skill gaps → ordered reskilling pathway → meaningful role/skill SDG links. Show at least two future scenarios and explain uncertainty. Only public/open/synthetic demo data; synthetic means fictional test profiles. Real CVs are not permitted by the Domain 1 brief.
+RunPod was not used because the prototype has no GPU workload. There is no RunPod endpoint or handler.
 
-## Preliminary submission
+## Challenges & Learnings
 
-- Official proposal PDF (reviewable exports and readiness index in [submission/](submission/README.md)).
-- Pitch slides.
-- Accessible functional prototype/build.
-- Technical and tools declaration PDF.
-- Public GitHub source with Apache 2.0 license and run instructions.
-- A 5–7 minute YouTube pitch/demo.
+- Public sources can be slow or unavailable. The app separates publication dates from retrieval times and reports stale or missing evidence.
+- U.S. occupation projections cannot establish Malaysian hiring demand. Their scope is labelled, and news provides context only.
+- Scores can appear more certain than the evidence supports. The app shows its reasoning and describes results as exploration guidance.
 
-This repo stays private during preparation. Review content before switching it public for submission. Replit use is required. The inspected portal also explicitly requires an API Premium sponsor integration, but does not identify the service or access instructions. That is an unresolved submission blocker. RunPod is required for GPU work under Participant §9.4; the sample README wording still needs clarification. No sponsor integration or actual platform-use proof is claimed. See the [unsent official questions](docs/submission/OFFICIAL-CLARIFICATION-DRAFT.md).
+Only Data Analyst uses the related U.S. Data Scientists trend proxy. The other roles do not receive a trend direction from that source. See [the trend methodology](docs/TREND-METHODOLOGY.md).
 
-Internal submission target: **24 October 2026, 22:00 MYT**. Official sources conflict between **25 October, 07:59:59 AM** and **25 October, 11:59 PM MYT**. Obtain a written clarification; plan against the earlier deadline meanwhile. Stop modifying submitted code at the applicable deadline until organisers permit further development.
+## Future Improvements
 
-## Working together
+- [ ] Test the flow with student volunteers and measure whether they can identify a pathway and next learning action.
+- [ ] Review scoring weights and accessibility with users.
+- [ ] Add more relevant Malaysian occupation and skills evidence.
+- [ ] Consider a source-checked AI explanation feature if it adds value.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md). Use small focused branches and reviews. Keep actual source URLs and checked dates, review all AI assistance, and update the technical declaration as the project develops. Do not commit secrets, private invitation links, personal records or unredacted account screenshots.
+## Team
 
-## Local preparation notes
+| Name | Role | GitHub |
+| --- | --- | --- |
+| Yong Jia Wei | Team leader | [@davidy1402](https://github.com/davidy1402) |
+| Rania Kamoun | Team member | Not listed |
+| Anes Nasr Anes Abbas | Team member | Not listed |
+| Tee Sou See | Team member | Not listed |
+| Akhrorov Muhammadsodik | Team member | Not listed |
 
-- [Rules and deliverables](RULES-AND-DELIVERABLES.md)
-- [Execution proposal](TEAM-EXECUTION-PLAN.md)
-- [Pitch/video plan](VIDEO-PLAN.md)
-- [Kickoff discussion draft](TOMORROW-MEETING-DRAFT.md)
+The team used Codex, ChatGPT, Figma Make, Gemini, and Antigravity during development. Their uses are recorded in the [Technical & Tools Declaration](submission/SDC2026_CtrlS_TechDeclaration.pdf).
+
+## Submission Checklist
+
+- [x] Team name, domain, SDG track and registered names recorded
+- [x] Pitch deck PDF and YouTube link added
+- [x] Replit used, with proof in `submission/`
+- [x] RunPod applicability recorded: no GPU workload
+- [x] Latest proposal and declaration PDFs copied into `submission/`
+- [ ] Proposal final check: shorten Section 3.2 to 200 words or fewer and correct the workshop checkbox
+- [x] Apache License 2.0 included
+- [ ] Publish the final package and verify the public default branch
+- [ ] Submit the GitHub repository link at the competition website
+
+The organiser's Q&A confirms the deadline as **25 October 2026, 7:59 AM MYT**. Preparing this package does not establish that the website submission is complete.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE). Respect the separate licenses of any future third-party components.
+Original project code is licensed under [Apache License 2.0](LICENSE). Third-party code, fonts, and information retain their own licences and terms. See the declaration and [third-party notices](docs/licenses/README.md).

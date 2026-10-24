@@ -1,6 +1,6 @@
 # Third-party notices
 
-The original application code uses the root Apache License 2.0. Third-party components retain their licenses. `submission/review/DEPENDENCIES.csv` records the complete frontend lockfile inventory, including development and optional packages; it is an inventory, not a replacement for their notices.
+The original application code uses the root Apache License 2.0. Third-party components retain their licenses. [DEPENDENCIES.csv](DEPENDENCIES.csv) records the frontend lockfile inventory captured on 23 October 2026, including development and optional packages; it is an inventory, not a replacement for their notices.
 
 The interface loads Manrope and DM Mono through Google Fonts. Original SIL Open Font License notices were retrieved from the Google Fonts source repository on 23 October 2026 MYT:
 
