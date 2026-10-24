@@ -1,12 +1,12 @@
 # Working together
 
-Start with the Google hub linked in the README. Read the task, confirm its owner and make sure the expected result is clear before changing shared work.
+Start with the project overview and run instructions in the README. Confirm a task's scope and owner before changing shared work.
 
 ## Code
 
 David and Sodik coordinate implementation. Claim a small task, work on a focused branch, and explain the change and how it was checked in a pull request. Do not let separate AI sessions edit the same shared files at once. Pull the latest changes before starting; if something overlaps, discuss it rather than replacing another person's work.
 
-The app stack and run commands will be documented once chosen. There is no runnable application in this setup commit.
+The app uses React, TypeScript and Vite under `frontend/`. Follow the root README for setup and verification commands.
 
 ## Research and writing
 

@@ -33,11 +33,11 @@ The browser A/B fixtures are explicitly fictional +12% and −8% records. Their 
 
 ## Release limits
 
-Only one related-role proxy supplies a trend direction. Other role directions are unknown. Statistical-reasoning priority is a teaching policy, not measured skill-demand growth. Scenario weights and matching have not been validated with users/employers. No runtime LLM, trained prediction model, GPU or RunPod workload exists. Actual Replit use/proof, mandatory sponsor identity/integration, public access approval, team declarations, signed forms and YouTube publication remain open in the [submission checklist](../../submission/STATUS-CHECKLIST.md).
+Only one related-role proxy supplies a trend direction. Other role directions are unknown. Statistical-reasoning priority is a teaching policy, not measured skill-demand growth. Scenario weights and matching have not been validated with users/employers. No runtime LLM, trained prediction model, GPU or RunPod workload exists. At the time of this 23 October check, platform proof, sponsor clarification, access, declarations and video publication were pending. See the [current submission index](../../submission/README.md) for the supplied artifacts and links.
 
 AI assistance: OpenAI Codex provided major implementation, testing, review and document assistance. Registered team members must review and understand the contribution before signing the declaration.
 
-Production-preview readback also returned 200 for the compiled app and BLS/UN/MOSTI routes; see [raw production check](2026-10-23-production-preview.json). A [local review ZIP](../../submission/review/Aiversecity_Local_Review_Build.zip) contains the same compiled/source inputs and notices.
+Production-preview readback also returned 200 for the compiled app and BLS/UN/MOSTI routes; see [raw production check](2026-10-23-production-preview.json). The earlier local review ZIP was archived during submission file organization. Source code and dependency notices remain in the repository.
 
 The pre-existing malformed duplicate Git ref `refs/heads/codex/live-news-replit 2` blocked fetch. Its original bytes were preserved outside Git under `/tmp/ctrl-s-git-repair`, and only that invalid duplicate name was moved aside. Fetch and new-branch creation then succeeded; no commit history, valid branch or stash was removed.
 
